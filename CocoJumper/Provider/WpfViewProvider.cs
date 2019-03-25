@@ -84,7 +84,7 @@ namespace CocoJumper.Provider
             wpfTextView.Caret.MoveTo(snapshotPoint);
         }
 
-        public void RenderControlByStringPossition(ElementType type, int stringStart, int length)
+        public void RenderControlByStringPossition(ElementType type, int stringStart, int length, string text)
         {
             IWpfTextViewLineCollection textViewLines = this.wpfTextView.TextViewLines;
 
@@ -95,7 +95,7 @@ namespace CocoJumper.Provider
             Geometry g = textViewLines.GetMarkerGeometry(span);
             if (g != null)
             {
-                var letterReference = new LetterWithMarker();
+                var letterReference = new LetterWithMarker(text);
                 Canvas.SetLeft(letterReference, g.Bounds.Left);
                 Canvas.SetTop(letterReference, g.Bounds.Top);
 

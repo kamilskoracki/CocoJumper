@@ -20,9 +20,10 @@ namespace CocoJumper.Controls
     /// </summary>
     public partial class LetterWithMarker : UserControl
     {
-        public LetterWithMarker()
+        public LetterWithMarker(string text)
         {
             InitializeComponent();
+            this.Content = text;
         }
     }
 }

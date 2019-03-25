@@ -61,6 +61,7 @@
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\VsTextManagerExtensions.cs" />
+    <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <Compile Include="Listeners\InputListener.cs" />
     <Compile Include="Logic\CocoJumperLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

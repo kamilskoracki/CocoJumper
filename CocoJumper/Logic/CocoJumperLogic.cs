@@ -1,4 +1,5 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Helpers;
 using CocoJumper.Provider;
 using System;
 
@@ -77,10 +78,22 @@ namespace CocoJumper.Logic
 
         public void Rerender()
         {
+            //POC
             viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
+            if (searchString.Length == 0)
+                return;
+            var keys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
+            string keyToAdd = "";
+            keys.MoveNext();
             foreach (var item in viewProvider.GetCurrentRenderedText())
             {
-                viewProvider.RenderControlByStringPossition(ElementType.LetterWithMarker, item.Start, item.DataLength);
+                viewProvider.RenderControlByStringPossition(ElementType.LetterWithMarker, item.Start, item.DataLength, keyToAdd + keys.Current.ToString());
+                if (!keys.MoveNext())
+                {
+                    keys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
+                    keyToAdd += "z";
+                    keys.MoveNext();
+                }
             }
         }
     }
