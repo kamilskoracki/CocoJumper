@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -11,6 +12,13 @@ namespace CocoJumper.Provider
     public enum ElementType
     {
         LetterWithMarker
+    }
+
+    public class LineData
+    {
+        public int Start;
+        public string Data;
+        public int DataLength;
     }
 
     public class WpfViewProvider : IDisposable
@@ -52,9 +60,18 @@ namespace CocoJumper.Provider
             this.adornmentLayer.RemoveAllAdornments();
         }
 
-        public string GetCurrentRenderedText()
+        public IEnumerable<LineData> GetCurrentRenderedText()
         {
-            return this.wpfTextView.TextSnapshot.GetText();
+            //TODO - find better method to download all rendered lines, this may be slow
+            foreach (var item in this.wpfTextView.TextViewLines)
+            {
+                yield return new LineData
+                {
+                    Start = item.Start.Position,
+                    Data = this.wpfTextView.TextSnapshot.GetText(item.Start.Position, item.Length),
+                    DataLength = item.Length
+                };
+            }
         }
 
         public void MoveCaretTo(int possition)
@@ -70,6 +87,8 @@ namespace CocoJumper.Provider
         public void RenderControlByStringPossition(ElementType type, int stringStart, int length)
         {
             IWpfTextViewLineCollection textViewLines = this.wpfTextView.TextViewLines;
+
+            var kk = GetCurrentRenderedText().ToList();
 
             var span = new SnapshotSpan(this.wpfTextView.TextSnapshot, Span.FromBounds(stringStart, stringStart + length));
 

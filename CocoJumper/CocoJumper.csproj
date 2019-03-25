@@ -65,6 +65,7 @@
     <Compile Include="Logic\CocoJumperLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\WpfViewProvider.cs" />
+    <Compile Include="WpfListener\CocoJumperListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

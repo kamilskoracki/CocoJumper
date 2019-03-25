@@ -21,8 +21,8 @@ namespace CocoJumper.Commands
 
         public static readonly Guid CommandSet = new Guid("29fda481-672d-4ce9-9793-0bebf8b4c6c8");
         private readonly AsyncPackage package;
-        private InputListener inputListener;
         private IVsEditorAdaptersFactoryService editorAdaptersFactoryService;
+        private InputListener inputListener;
         private CocoJumperLogic logic;
         private IVsTextManager vsTextManager;
 
@@ -59,7 +59,7 @@ namespace CocoJumper.Commands
             IComponentModel componentModel = await package.GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
             Assumes.Present(componentModel);
             IVsEditorAdaptersFactoryService editor = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-           
+
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
             Instance = new CocoJumperCommand(package, commandService, vsTextManager, editor);
         }

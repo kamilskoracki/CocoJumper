@@ -1,6 +1,5 @@
 ﻿using CocoJumper.Base.Enum;
 using CocoJumper.Provider;
-using Microsoft.VisualStudio.Text.Editor;
 using System;
 
 namespace CocoJumper.Logic
@@ -40,7 +39,7 @@ namespace CocoJumper.Logic
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
         {
-            if(eventType == KeyEventType.Cancel)
+            if (eventType == KeyEventType.Cancel)
             {
                 return CocoJumperKeyboardActionResult.Finished;
             }
@@ -49,21 +48,26 @@ namespace CocoJumper.Logic
                 case CocoJumperState.Searching when eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(searchString):
                     searchString = searchString.Substring(0, searchString.Length - 1);
                     break;
+
                 case CocoJumperState.Choosing when eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(choosingString):
                     choosingString = choosingString.Substring(0, choosingString.Length - 1);
                     break;
+
                 case CocoJumperState.Searching when eventType == KeyEventType.Backspace && string.IsNullOrEmpty(choosingString):
                     state = CocoJumperState.Searching;
                     break;
+
                 case CocoJumperState.Inactive:
                     throw new Exception($"{nameof(KeyboardAction)} in {nameof(CocoJumperLogic)}, was called when stage was Inactive");
                 case CocoJumperState.Searching when eventType == KeyEventType.KeyPress:
                     searchString += key;
                     break;
+
                 case CocoJumperState.Choosing when eventType == KeyEventType.KeyPress:
                     choosingString += key;
                     //TODO - here decide if it's end of choosing
                     break;
+
                 default:
                     throw new Exception($"Unhandled state on {nameof(KeyboardAction)} in {nameof(CocoJumperLogic)}");
             }
@@ -73,6 +77,11 @@ namespace CocoJumper.Logic
 
         public void Rerender()
         {
+            viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
+            foreach (var item in viewProvider.GetCurrentRenderedText())
+            {
+                viewProvider.RenderControlByStringPossition(ElementType.LetterWithMarker, item.Start, item.DataLength);
+            }
         }
     }
 }
