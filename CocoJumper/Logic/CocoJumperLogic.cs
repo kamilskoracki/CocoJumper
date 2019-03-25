@@ -22,18 +22,13 @@ namespace CocoJumper.Logic
             viewProvider = _renderer;
         }
 
-        private CocoJumperLogic()
-        {
-        }
-
         public void ActivateSearching()
         {
             if (state != CocoJumperState.Inactive)
-            {
                 throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {state}");
-            }
+
             state = CocoJumperState.Searching;
-            searchString = "";
+            searchString = string.Empty;
         }
 
         public void Dispose()

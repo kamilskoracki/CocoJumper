@@ -12,7 +12,7 @@ namespace CocoJumper.Listeners
 
     public class InputListener : IOleCommandTarget, IDisposable
     {
-        public KeyboardEventDelegate KeyPressEvent = null;
+        public KeyboardEventDelegate KeyPressEvent;
 
         private static readonly uint[] cmdIdsForCancelAction = {
             (uint)VSConstants.VSStd2KCmdID.LEFT,
@@ -49,21 +49,14 @@ namespace CocoJumper.Listeners
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             if (cmdIdsForCancelAction.Contains(nCmdID))
-            {
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Cancel);
-            }
             else if (nCmdID == (int)VSConstants.VSStd2KCmdID.BACKSPACE)
-            {
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Backspace);
-            }
             else if (TryGetTypedChar(pguidCmdGroup, nCmdID, pvaIn, out char typedChar))
-            {
                 KeyPressEvent?.Invoke(this, typedChar, KeyEventType.KeyPress);
-            }
             else
-            {
                 return nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-            }
+
             return VSConstants.S_OK;
         }
 
@@ -73,7 +66,7 @@ namespace CocoJumper.Listeners
             return nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
 
-        private bool TryGetTypedChar(Guid cmdGroup, uint nCmdID, IntPtr pvaIn, out char typedChar)
+        private static bool TryGetTypedChar(Guid cmdGroup, uint nCmdID, IntPtr pvaIn, out char typedChar)
         {
             typedChar = char.MinValue;
             if (cmdGroup != VSConstants.VSStd2K || nCmdID != (uint)VSConstants.VSStd2KCmdID.TYPECHAR)

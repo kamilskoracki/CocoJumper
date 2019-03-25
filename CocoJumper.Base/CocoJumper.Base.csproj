@@ -48,12 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\CocoJumperKeyboardActionResult.cs" />
+    <Compile Include="Enum\CocoJumperState.cs" />
+    <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\KeyEventType.cs" />
+    <Compile Include="Model\LineData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Logic\" />
-    <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />

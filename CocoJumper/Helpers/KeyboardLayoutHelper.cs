@@ -6,7 +6,7 @@ namespace CocoJumper.Helpers
     public static class KeyboardLayoutHelper
     {
         //TODO - add more layouts?
-        private static string[] layout = {
+        private static readonly string[] Layouts = {
             "qwertyuiop",
             "asdfghjkl",
             "zxcvbnm"
