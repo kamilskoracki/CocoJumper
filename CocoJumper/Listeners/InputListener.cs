@@ -26,6 +26,7 @@ namespace CocoJumper.Listeners
             (uint)VSConstants.VSStd2KCmdID.END,
             (uint)VSConstants.VSStd2KCmdID.CANCEL
         };
+
         private readonly IVsTextView _adapter;
         private IOleCommandTarget nextCommandHandler;
 
@@ -47,7 +48,6 @@ namespace CocoJumper.Listeners
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-
             if (cmdIdsForCancelAction.Contains(nCmdID))
             {
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Cancel);

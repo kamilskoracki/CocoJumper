@@ -12,35 +12,27 @@ namespace CocoJumper.Helpers
             "zxcvbnm"
         };
 
+        public static IEnumerable<char?> GetKeys(char key)
+        {
+            var inxs = GetIndexsOfKey(key) ?? GetIndexsOfKey('f') ?? throw new System.Exception($"{nameof(GetKeys)} for {key} returned null");
+
+            yield return GetCharByXY(0, inxs.j);
+            yield return GetCharByXY(1, inxs.j);
+            yield return GetCharByXY(2, inxs.j);
+            for (int x = 1; x < 10; x++)
+            {
+                yield return GetCharByXY(0, inxs.j + x);
+                yield return GetCharByXY(1, inxs.j + x);
+                yield return GetCharByXY(2, inxs.j + x);
+                yield return GetCharByXY(0, inxs.j - x);
+                yield return GetCharByXY(1, inxs.j - x);
+                yield return GetCharByXY(2, inxs.j - x);
+            }
+        }
+
         public static IEnumerable<char> GetKeysNotNull(char key)
         {
             return GetKeys(key).Where(x => x.HasValue).Select(x => x.Value);
-        }
-
-        public static IEnumerable<char?> GetKeys(char key)
-        {
-            for (int i = 0; i < layout.Length; i++)
-            {
-                var curr = layout[i];
-                for (int j = 0; j < curr.Length; j++)
-                {
-                    if (curr[j] == key)
-                    {
-                        yield return GetCharByXY(0, j);
-                        yield return GetCharByXY(1, j);
-                        yield return GetCharByXY(2, j);
-                        for (int x = 1; x < 10; x++)
-                        {
-                            yield return GetCharByXY(0, j + x);
-                            yield return GetCharByXY(1, j + x);
-                            yield return GetCharByXY(2, j + x);
-                            yield return GetCharByXY(0, j - x);
-                            yield return GetCharByXY(1, j - x);
-                            yield return GetCharByXY(2, j - x);
-                        }
-                    }
-                }
-            }
         }
 
         private static char? GetCharByXY(int x, int y)
@@ -51,6 +43,22 @@ namespace CocoJumper.Helpers
             if (y >= curr.Length || y < 0)
                 return null;
             return curr[y];
+        }
+
+        private static (int i, int j)? GetIndexsOfKey(char key)
+        {
+            for (int i = 0; i < layout.Length; i++)
+            {
+                var curr = layout[i];
+                for (int j = 0; j < curr.Length; j++)
+                {
+                    if (curr[j] == key)
+                    {
+                        return (i, j);
+                    }
+                }
+            }
+            return null;
         }
     }
 }
