@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocoJumper", "CocoJumper\CocoJumper.csproj", "{9CB7EF88-D406-4E9B-977D-88E10237C75D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocoJumper.Base", "CocoJumper.Base\CocoJumper.Base.csproj", "{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CB7EF88-D406-4E9B-977D-88E10237C75D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CB7EF88-D406-4E9B-977D-88E10237C75D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CB7EF88-D406-4E9B-977D-88E10237C75D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CB7EF88-D406-4E9B-977D-88E10237C75D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5CD76C2C-9577-4949-9E50-4E89BEFD4261}
+	EndGlobalSection
+EndGlobal
