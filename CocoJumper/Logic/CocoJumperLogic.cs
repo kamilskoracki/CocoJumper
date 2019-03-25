@@ -55,7 +55,7 @@ namespace CocoJumper.Logic
                 viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
                 foreach (var item in searchResults)
                 {
-                    viewProvider.RenderControlByStringPossition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
+                    viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
                 }
             }
 

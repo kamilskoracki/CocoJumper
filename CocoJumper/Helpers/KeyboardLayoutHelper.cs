@@ -37,9 +37,9 @@ namespace CocoJumper.Helpers
 
         private static char? GetCharByXY(int x, int y)
         {
-            if (x >= layout.Length || x < 0)
+            if (x >= Layouts.Length || x < 0)
                 return null;
-            var curr = layout[x];
+            var curr = Layouts[x];
             if (y >= curr.Length || y < 0)
                 return null;
             return curr[y];
@@ -47,9 +47,9 @@ namespace CocoJumper.Helpers
 
         private static (int i, int j)? GetIndexsOfKey(char key)
         {
-            for (int i = 0; i < layout.Length; i++)
+            for (int i = 0; i < Layouts.Length; i++)
             {
-                var curr = layout[i];
+                var curr = Layouts[i];
                 for (int j = 0; j < curr.Length; j++)
                 {
                     if (curr[j] == key)
