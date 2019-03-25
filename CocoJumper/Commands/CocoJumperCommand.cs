@@ -2,6 +2,7 @@
 using CocoJumper.Extensions;
 using CocoJumper.Listeners;
 using CocoJumper.Logic;
+using CocoJumper.Provider;
 using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -78,7 +79,7 @@ namespace CocoJumper.Commands
             IWpfTextView wpfTextView = editorAdaptersFactoryService.GetWpfTextView(textView);
 
             CleanupLogicAndInputListener();
-            var renderer = new RendererLogic(wpfTextView);
+            var renderer = new WpfViewProvider(wpfTextView);
             logic = new CocoJumperLogic(renderer);
             inputListener = new InputListener(textView);
             inputListener.KeyPressEvent += OnKeyboardAction;
