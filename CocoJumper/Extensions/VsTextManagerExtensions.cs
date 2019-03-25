@@ -6,10 +6,12 @@ namespace CocoJumper.Extensions
 {
     public static class VsTextManagerExtensions
     {
-        private static readonly int MUST_HAVE_FOCUS_FLAG = 1;
+        private const int MUST_HAVE_FOCUS_FLAG = 1;
+
         public static IVsTextView GetActiveView(this IVsTextManager vsTextManager)
         {
-            vsTextManager = vsTextManager ?? throw new ArgumentNullException($"Argument {nameof(VsTextBuffer)} in method {nameof(GetActiveView)} is empty");
+            vsTextManager = vsTextManager ?? throw new ArgumentNullException(
+                                $"Argument {nameof(VsTextBuffer)} in method {nameof(GetActiveView)} is empty");
             int res;
             if ((res = vsTextManager.GetActiveView(MUST_HAVE_FOCUS_FLAG, null, out IVsTextView view)) != VSConstants.S_OK)
             {

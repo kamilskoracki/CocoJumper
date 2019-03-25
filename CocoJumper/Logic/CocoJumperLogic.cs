@@ -2,6 +2,7 @@
 using CocoJumper.Helpers;
 using CocoJumper.Provider;
 using System;
+using System.Collections.Generic;
 
 namespace CocoJumper.Logic
 {
@@ -18,18 +19,13 @@ namespace CocoJumper.Logic
             viewProvider = _renderer;
         }
 
-        private CocoJumperLogic()
-        {
-        }
-
         public void ActivateSearching()
         {
             if (state != CocoJumperState.Inactive)
-            {
                 throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {state}");
-            }
+
             state = CocoJumperState.Searching;
-            searchString = "";
+            searchString = string.Empty;
         }
 
         public void Dispose()
@@ -72,7 +68,7 @@ namespace CocoJumper.Logic
                 default:
                     throw new Exception($"Unhandled state on {nameof(KeyboardAction)} in {nameof(CocoJumperLogic)}");
             }
-            this.Rerender();
+            Rerender();
             return CocoJumperKeyboardActionResult.Ok;
         }
 
@@ -80,34 +76,21 @@ namespace CocoJumper.Logic
         {
             //POC
             viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
-            if (searchString.Length == 0)
-                return;
-            var keys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
-            string keyToAdd = "";
-            keys.MoveNext();
-            foreach (var item in viewProvider.GetCurrentRenderedText())
+            if (searchString.Length == 0) return;
+
+            using (IEnumerator<char> keys =
+                KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator())
             {
-                viewProvider.RenderControlByStringPossition(ElementType.LetterWithMarker, item.Start, item.DataLength, keyToAdd + keys.Current.ToString());
-                if (!keys.MoveNext())
+                string keyToAdd = string.Empty;
+                keys.MoveNext();
+                foreach (var item in viewProvider.GetCurrentRenderedText())
                 {
-                    keys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
+                    viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Start, item.DataLength, keyToAdd + keys.Current);
+                    if (keys.MoveNext()) continue;
                     keyToAdd += "z";
                     keys.MoveNext();
                 }
             }
         }
     }
-}
-
-public enum CocoJumperKeyboardActionResult
-{
-    Ok,
-    Finished
-}
-
-public enum CocoJumperState : int
-{
-    Inactive = 0,
-    Searching = 0x1,
-    Choosing = 0x2
 }

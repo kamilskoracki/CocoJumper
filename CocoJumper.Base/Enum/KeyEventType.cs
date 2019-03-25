@@ -1,6 +1,6 @@
 ﻿namespace CocoJumper.Base.Enum
 {
-    public enum KeyEventType : int
+    public enum KeyEventType
     {
         Backspace = 0x1,
         KeyPress = 0x2,

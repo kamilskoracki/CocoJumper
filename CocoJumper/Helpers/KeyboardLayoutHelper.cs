@@ -6,7 +6,7 @@ namespace CocoJumper.Helpers
     public static class KeyboardLayoutHelper
     {
         //TODO - add more layouts?
-        private static string[] layout = {
+        private static readonly string[] Layouts = {
             "qwertyuiop",
             "asdfghjkl",
             "zxcvbnm"
@@ -17,40 +17,38 @@ namespace CocoJumper.Helpers
             return GetKeys(key).Where(x => x.HasValue).Select(x => x.Value);
         }
 
-        public static IEnumerable<char?> GetKeys(char key)
+        private static char? GetCharByXY(int x, int y)
         {
-            for (int i = 0; i < layout.Length; i++)
+            if (x >= Layouts.Length || x < 0)
+                return null;
+            string layout = Layouts[x];
+            if (y >= layout.Length || y < 0)
+                return null;
+            return layout[y];
+        }
+
+        private static IEnumerable<char?> GetKeys(char key)
+        {
+            foreach (string layout in Layouts)
             {
-                var curr = layout[i];
-                for (int j = 0; j < curr.Length; j++)
+                for (int j = 0; j < layout.Length; j++)
                 {
-                    if (curr[j] == key)
+                    if (layout[j] != key) continue;
+
+                    yield return GetCharByXY(0, j);
+                    yield return GetCharByXY(1, j);
+                    yield return GetCharByXY(2, j);
+                    for (int x = 1; x < 10; x++)
                     {
-                        yield return GetCharByXY(0, j);
-                        yield return GetCharByXY(1, j);
-                        yield return GetCharByXY(2, j);
-                        for (int x = 1; x < 10; x++)
-                        {
-                            yield return GetCharByXY(0, j + x);
-                            yield return GetCharByXY(1, j + x);
-                            yield return GetCharByXY(2, j + x);
-                            yield return GetCharByXY(0, j - x);
-                            yield return GetCharByXY(1, j - x);
-                            yield return GetCharByXY(2, j - x);
-                        }
+                        yield return GetCharByXY(0, j + x);
+                        yield return GetCharByXY(1, j + x);
+                        yield return GetCharByXY(2, j + x);
+                        yield return GetCharByXY(0, j - x);
+                        yield return GetCharByXY(1, j - x);
+                        yield return GetCharByXY(2, j - x);
                     }
                 }
             }
-        }
-
-        private static char? GetCharByXY(int x, int y)
-        {
-            if (x >= layout.Length || x < 0)
-                return null;
-            var curr = layout[x];
-            if (y >= curr.Length || y < 0)
-                return null;
-            return curr[y];
         }
     }
 }

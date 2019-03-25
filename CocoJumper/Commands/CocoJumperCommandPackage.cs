@@ -9,14 +9,14 @@ namespace CocoJumper.Commands
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(CocoJumperCommandPackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     public sealed class CocoJumperCommandPackage : AsyncPackage
     {
         public const string PackageGuidString = "cd8f3565-1f57-4c09-b5c1-01fe488ab080";
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await CocoJumperCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
         }

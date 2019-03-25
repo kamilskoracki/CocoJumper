@@ -20,11 +20,11 @@ namespace CocoJumper.Commands
         public const int CommandId = 0x0100;
 
         public static readonly Guid CommandSet = new Guid("29fda481-672d-4ce9-9793-0bebf8b4c6c8");
+        private readonly IVsEditorAdaptersFactoryService editorAdaptersFactoryService;
         private readonly AsyncPackage package;
-        private IVsEditorAdaptersFactoryService editorAdaptersFactoryService;
+        private readonly IVsTextManager vsTextManager;
         private InputListener inputListener;
         private CocoJumperLogic logic;
-        private IVsTextManager vsTextManager;
 
         private CocoJumperCommand(AsyncPackage _package, OleMenuCommandService _commandService, IVsTextManager _textManager, IVsEditorAdaptersFactoryService _editorAdaptersFactoryService)
         {
@@ -48,7 +48,7 @@ namespace CocoJumper.Commands
         {
             get
             {
-                return this.package;
+                return package;
             }
         }
 
