@@ -10,7 +10,7 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : IDisposable
     {
-        private const int searchLimit = 25;
+        private const int searchLimit = 50;
         private string choosingString;
         private bool isSingleSearch;
         private List<SearchResult> searchResults;
@@ -60,6 +60,17 @@ namespace CocoJumper.Logic
                 {
                     throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
                 }
+                else if (eventType == KeyEventType.ConfirmSearching)
+                {
+                    state = CocoJumperState.Choosing;
+                    //TODO - other type?
+                    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
+                    foreach (var item in searchResults)
+                    {
+                        viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
+                    }
+                    return CocoJumperKeyboardActionResult.Ok;
+                }
                 SearchCurrentView();
                 viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
 
@@ -80,7 +91,7 @@ namespace CocoJumper.Logic
                     }
                 }
             }
-            else if (state == CocoJumperState.Choosing)
+            else if (state == CocoJumperState.Choosing && eventType != KeyEventType.ConfirmSearching)
             {
                 if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(choosingString))
                     choosingString = choosingString.Substring(0, choosingString.Length - 1);
@@ -91,6 +102,10 @@ namespace CocoJumper.Logic
                 else if (eventType == KeyEventType.KeyPress && !key.HasValue)
                 {
                     throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
+                }
+                else
+                {
+                    throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state");
                 }
                 SearchResult isFinished = searchResults.SingleOrDefault(x => x.Key.ToLower() == choosingString);
                 if (isFinished != null)
@@ -127,13 +142,14 @@ namespace CocoJumper.Logic
 
                 while ((n = item.Data.IndexOf(searchString, n, StringComparison.InvariantCulture)) != -1)
                 {
+                    //TODO - revrite this to be more optimal
                     if (!keyboardKeys.MoveNext())
                     {
                         keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
                         keyToAdd += "z";
                         keyboardKeys.MoveNext();
                     }
-                    if(keyboardKeys.Current == 'z')
+                    if (keyboardKeys.Current == 'z')
                     {
                         if (!keyboardKeys.MoveNext())
                         {
