@@ -3,24 +3,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="Transparent"
     Opacity="0.8"
-    FontSize="17"
-    FontWeight="SemiBold"
-    Height="20">
+    FontWeight="SemiBold">
     <UserControl.Resources>
         <SolidColorBrush x:Key="LetterBackground" Color="Silver" />
     </UserControl.Resources>
 
     <Border CornerRadius="2"
-            Padding="1"
-            BorderThickness="1">
+            Padding="1">
         <Border.Background>
             <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
         </Border.Background>
 
         <TextBlock Name="letterContent"
                    HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Text="k">
+                   VerticalAlignment="Center">
             <TextBlock.Background>
                 <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
             </TextBlock.Background>

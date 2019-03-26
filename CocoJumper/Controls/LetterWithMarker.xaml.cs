@@ -5,10 +5,13 @@
     /// </summary>
     public partial class LetterWithMarker
     {
-        public LetterWithMarker(string text)
+        public LetterWithMarker(string text, double lineHeight)
         {
             InitializeComponent();
+
             letterContent.Text = text;
+            FontSize = lineHeight - 5;
+            Height = lineHeight;
         }
     }
 }
