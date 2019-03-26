@@ -58,8 +58,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Commands\CocoJumperCommand.cs" />
+    <Compile Include="Commands\CocoJumperMultiSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperCommandPackage.cs" />
+    <Compile Include="Commands\CocoJumperSingleSearchCommand.cs" />
     <Compile Include="Controls\LetterWithMarker.xaml.cs">
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
@@ -82,6 +83,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Commands\Resources\CocoJumperSingleSearchCommand.png" />
     <VSCTCompile Include="Commands\CocoJumperCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>

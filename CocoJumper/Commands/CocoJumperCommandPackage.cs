@@ -17,7 +17,8 @@ namespace CocoJumper.Commands
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            await CocoJumperCommand.InitializeAsync(this);
+            await CocoJumperMultiSearchCommand.InitializeAsync(this);
+            await CocoJumperSingleSearchCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
         }
     }

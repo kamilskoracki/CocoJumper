@@ -53,6 +53,7 @@
     <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\KeyEventType.cs" />
     <Compile Include="Model\LineData.cs" />
+    <Compile Include="Model\SearchResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
