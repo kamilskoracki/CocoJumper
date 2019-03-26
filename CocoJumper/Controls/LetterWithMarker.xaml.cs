@@ -8,12 +8,7 @@
         public LetterWithMarker(string text)
         {
             InitializeComponent();
-            Content = text;
-        }
-
-        private void TextBox_TextChanged()
-        {
-
+            letterContent.Text = text;
         }
     }
 }

@@ -1,23 +1,29 @@
 ﻿<UserControl x:Class="CocoJumper.Controls.LetterWithMarker"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    Background="Transparent" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="Transparent"
+    Opacity="0.8"
     FontSize="17"
     FontWeight="SemiBold"
     Height="20">
     <UserControl.Resources>
-        <SolidColorBrush x:Key="LetterBackground" Color="Silver"/>
+        <SolidColorBrush x:Key="LetterBackground" Color="Silver" />
     </UserControl.Resources>
-    <Border CornerRadius="2" 
-            Padding="1">
+
+    <Border CornerRadius="2"
+            Padding="1"
+            BorderThickness="1">
         <Border.Background>
-            <SolidColorBrush Color="{Binding Path=Color, Source={StaticResource LetterBackground}}"/>
+            <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
         </Border.Background>
-        <TextBlock 
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center"
-                 Text="k"
-                 Padding="5">
+
+        <TextBlock Name="letterContent"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="k">
+            <TextBlock.Background>
+                <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
+            </TextBlock.Background>
         </TextBlock>
     </Border>
 </UserControl>
