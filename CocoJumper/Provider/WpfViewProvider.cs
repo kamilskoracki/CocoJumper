@@ -82,7 +82,7 @@ namespace CocoJumper.Provider
             Geometry g = textViewLines.GetMarkerGeometry(span);
             if (g == null) return;
 
-            LetterWithMarker letterReference = new LetterWithMarker(text);
+            LetterWithMarker letterReference = new LetterWithMarker(text, wpfTextView.LineHeight);
             Canvas.SetLeft(letterReference, g.Bounds.Left);
             Canvas.SetTop(letterReference, g.Bounds.Top);
 
