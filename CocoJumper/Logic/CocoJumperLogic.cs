@@ -63,6 +63,8 @@ namespace CocoJumper.Logic
                 }
                 else if (eventType == KeyEventType.ConfirmSearching)
                 {
+                    if (searchResults.Count == 0)
+                        return CocoJumperKeyboardActionResult.Ok;
                     state = CocoJumperState.Choosing;
                     //TODO - other type?
                     viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
@@ -103,10 +105,6 @@ namespace CocoJumper.Logic
                 else if (eventType == KeyEventType.KeyPress && !key.HasValue)
                 {
                     throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
-                }
-                else
-                {
-                    throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state");
                 }
                 SearchResult isFinished = searchResults.SingleOrDefault(x => x.Key.ToLower() == choosingString);
                 if (isFinished != null)
