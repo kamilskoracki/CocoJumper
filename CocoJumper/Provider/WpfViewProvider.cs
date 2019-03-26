@@ -1,5 +1,6 @@
 ﻿using CocoJumper.Base.Enum;
 using CocoJumper.Base.Model;
+using CocoJumper.Base.Provider;
 using CocoJumper.Controls;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -11,7 +12,7 @@ using System.Windows.Media;
 
 namespace CocoJumper.Provider
 {
-    public class WpfViewProvider : IDisposable
+    public class WpfViewProvider : IWpfViewProvider
     {
         private readonly IAdornmentLayer adornmentLayer;
         private readonly Dictionary<ElementType, Type> elementTypes;

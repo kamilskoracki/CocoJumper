@@ -1,14 +1,15 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Logic;
 using CocoJumper.Base.Model;
+using CocoJumper.Base.Provider;
 using CocoJumper.Helpers;
-using CocoJumper.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace CocoJumper.Logic
 {
-    public class CocoJumperLogic : IDisposable
+    public class CocoJumperLogic : ICocoJumperLogic
     {
         private const int searchLimit = 50;
         private string choosingString;
@@ -16,9 +17,9 @@ namespace CocoJumper.Logic
         private List<SearchResult> searchResults;
         private string searchString;
         private CocoJumperState state;
-        private WpfViewProvider viewProvider;
+        private IWpfViewProvider viewProvider;
 
-        public CocoJumperLogic(WpfViewProvider _renderer)
+        public CocoJumperLogic(IWpfViewProvider _renderer)
         {
             state = CocoJumperState.Inactive;
             searchResults = new List<SearchResult>();
