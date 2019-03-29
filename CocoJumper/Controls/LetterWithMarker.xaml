@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Background="Transparent"
     Opacity="0.8"
-    FontWeight="SemiBold">
+    FontWeight="SemiBold"
+    Margin="0 2 0 0">
     <UserControl.Resources>
         <SolidColorBrush x:Key="LetterBackground" Color="Silver" />
     </UserControl.Resources>
@@ -16,7 +17,7 @@
 
         <TextBlock Name="letterContent"
                    HorizontalAlignment="Center"
-                   VerticalAlignment="Center">
+                   VerticalAlignment="Bottom">
             <TextBlock.Background>
                 <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
             </TextBlock.Background>
