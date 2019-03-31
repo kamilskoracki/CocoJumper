@@ -13,7 +13,5 @@
 
     <controls:Marker MarkerText="{Binding ElementName=_this, Path=MarkerText}"
                      Height="{Binding ElementName=_this, Path=MarkerHeight}"
-                     FontSize="{Binding ElementName=_this, Path=MarkerFontSize}">
-
-    </controls:Marker>
+                     FontSize="{Binding ElementName=_this, Path=MarkerFontSize}" />
 </UserControl>

@@ -1,20 +1,19 @@
-﻿namespace CocoJumper.Controls
+﻿using CocoJumper.Models;
+
+namespace CocoJumper.Controls
 {
     /// <summary>
     /// Interaction logic for LetterWithMarker.xaml
     /// </summary>
     public partial class LetterWithMarker
     {
-        private const int FontSizeFactor = -5;
-        private const int HeightFactor = -4;
-
         public LetterWithMarker(string text, double lineHeight)
         {
             InitializeComponent();
 
             MarkerText = text;
-            MarkerFontSize = lineHeight + FontSizeFactor;
-            MarkerHeight = lineHeight + HeightFactor;
+            MarkerFontSize = lineHeight + MarkerViewModel.FontSizeFactor;
+            MarkerHeight = lineHeight + MarkerViewModel.HeightFactor;
         }
 
         public double MarkerFontSize { get; set; }

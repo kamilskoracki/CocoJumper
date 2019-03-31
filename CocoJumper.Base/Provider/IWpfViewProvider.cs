@@ -11,5 +11,6 @@ namespace CocoJumper.Base.Provider
         IEnumerable<LineData> GetCurrentRenderedText();
         void MoveCaretTo(int position);
         void RenderControlByStringPosition(ElementType type, int stringStart, int length, string text);
+        void RenderSearcherControlByCaretPosition(string searchText, int matchNumber);
     }
 }

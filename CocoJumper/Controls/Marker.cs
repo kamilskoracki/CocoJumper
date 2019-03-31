@@ -1,13 +1,17 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace CocoJumper.Controls
 {
-    public class Marker : ContentControl
+    public class Marker : ContentControl, INotifyPropertyChanged
     {
         public static readonly DependencyProperty MarkerTextProperty =
             DependencyProperty.Register("MarkerText", typeof(string),
                 typeof(Marker), new PropertyMetadata(MarkerTextChanged));
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string MarkerText
         {
@@ -15,25 +19,15 @@ namespace CocoJumper.Controls
             set { SetValue(MarkerTextProperty, value); }
         }
 
-        private static void MarkerTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            ((Marker)d).MarkerText = e.NewValue as string;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        //public static readonly DependencyProperty MarkerTextProperty = DependencyProperty.RegisterAttached(
-        //    "MarkerText", 
-        //    typeof(string), 
-        //    typeof(Marker), 
-        //    new PropertyMetadata(default(string)));
-
-        //public static string GetMarkerText(UIElement element)
-        //{
-        //    return (string) element.GetValue(MarkerTextProperty);
-        //}
-
-        //public static void SetMarkerText(UIElement element, string value)
-        //{
-        //    element.SetValue(MarkerTextProperty, value);
-        //}
+        private static void MarkerTextChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            Marker c = sender as Marker;
+            c?.OnPropertyChanged(nameof(c.MarkerText));
+        }
     }
 }

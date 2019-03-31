@@ -14,7 +14,7 @@ namespace CocoJumper.Logic
         private const int searchLimit = 50;
         private string choosingString;
         private bool isSingleSearch;
-        private List<SearchResult> searchResults;
+        private readonly List<SearchResult> searchResults;
         private string searchString;
         private CocoJumperState state;
         private IWpfViewProvider viewProvider;
@@ -35,6 +35,7 @@ namespace CocoJumper.Logic
             searchString = string.Empty;
             choosingString = string.Empty;
             isSingleSearch = isSingle;
+            viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
         }
 
         public void Dispose()
@@ -64,7 +65,10 @@ namespace CocoJumper.Logic
                 else if (eventType == KeyEventType.ConfirmSearching)
                 {
                     if (searchResults.Count == 0)
+                    {
+                        viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
                         return CocoJumperKeyboardActionResult.Ok;
+                    }
                     state = CocoJumperState.Choosing;
                     //TODO - other type?
                     viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
@@ -72,6 +76,8 @@ namespace CocoJumper.Logic
                     {
                         viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
                     }
+
+                    viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
                     return CocoJumperKeyboardActionResult.Ok;
                 }
                 SearchCurrentView();
@@ -120,6 +126,7 @@ namespace CocoJumper.Logic
                 }
             }
 
+            viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
             return CocoJumperKeyboardActionResult.Ok;
         }
 

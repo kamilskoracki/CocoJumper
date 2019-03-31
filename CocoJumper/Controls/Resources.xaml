@@ -4,6 +4,7 @@
     xmlns:controls="clr-namespace:CocoJumper.Controls">
 
     <SolidColorBrush x:Key="LetterBackground" Color="Silver" />
+    <SolidColorBrush x:Key="BorderBackground" Color="ForestGreen" />
 
     <Style TargetType="controls:Marker">
         <Setter Property="Background">
@@ -34,7 +35,7 @@
                         <Border.Background>
                             <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
                         </Border.Background>
-    
+
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -46,11 +47,8 @@
                                        Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type controls:Marker}},
                                                          Path=MarkerText}">
-                                <TextBlock.Background>
-                                    <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
-                                </TextBlock.Background>
                             </TextBlock>
-                            <ContentControl Grid.Column="1" 
+                            <ContentControl Grid.Column="1"
                                             Content="{TemplateBinding Content}" />
                         </Grid>
                     </Border>
