@@ -64,6 +64,7 @@
     <Compile Include="Controls\LetterWithMarker.xaml.cs">
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Marker.cs" />
     <Compile Include="Extensions\VsTextManagerExtensions.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <Compile Include="Listeners\InputListener.cs" />
@@ -302,6 +303,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\LetterWithMarker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Resources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

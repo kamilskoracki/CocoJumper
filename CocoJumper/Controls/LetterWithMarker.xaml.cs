@@ -12,9 +12,13 @@
         {
             InitializeComponent();
 
-            letterContent.Text = text;
-            FontSize = lineHeight + FontSizeFactor;
-            Height = lineHeight + HeightFactor;
+            MarkerText = text;
+            MarkerFontSize = lineHeight + FontSizeFactor;
+            MarkerHeight = lineHeight + HeightFactor;
         }
+
+        public double MarkerFontSize { get; set; }
+        public double MarkerHeight { get; set; }
+        public string MarkerText { get; set; }
     }
 }
