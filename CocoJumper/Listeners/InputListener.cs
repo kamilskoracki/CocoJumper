@@ -27,6 +27,10 @@ namespace CocoJumper.Listeners
             (uint)VSConstants.VSStd2KCmdID.CANCEL
         };
 
+        private static readonly uint[] cmdIdsForAcceptSelectionAction = {
+            (uint)VSConstants.VSStd2KCmdID.RETURN
+        };
+
         private readonly IVsTextView _adapter;
         private IOleCommandTarget nextCommandHandler;
 
@@ -50,6 +54,8 @@ namespace CocoJumper.Listeners
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             if (cmdIdsForCancelAction.Contains(nCmdID))
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Cancel);
+            else if (cmdIdsForAcceptSelectionAction.Contains(nCmdID))
+                KeyPressEvent?.Invoke(this, null, KeyEventType.ConfirmSearching);
             else if (nCmdID == (int)VSConstants.VSStd2KCmdID.BACKSPACE)
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Backspace);
             else if (TryGetTypedChar(pguidCmdGroup, nCmdID, pvaIn, out char typedChar))
