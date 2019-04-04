@@ -48,6 +48,7 @@ namespace CocoJumper.Logic
         {
             if (eventType == KeyEventType.Cancel)
             {
+                viewProvider.ExitSearch();
                 return CocoJumperKeyboardActionResult.Finished;
             }
             if (state == CocoJumperState.Searching)

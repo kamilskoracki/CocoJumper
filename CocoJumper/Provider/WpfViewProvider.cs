@@ -2,6 +2,7 @@
 using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
 using CocoJumper.Controls;
+using CocoJumper.Events;
 using CocoJumper.Models;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -18,10 +19,12 @@ namespace CocoJumper.Provider
         private readonly IAdornmentLayer adornmentLayer;
         private readonly Dictionary<ElementType, Type> elementTypes;
         private readonly IWpfTextView wpfTextView;
+        private IEventAggregator _eventAggregator;
         private SearcherWithMarker _searcherControl;
 
         public WpfViewProvider(IWpfTextView _wpfTextView)
         {
+            _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
             _markerViewModel = new MarkerViewModel();
             wpfTextView = _wpfTextView ?? throw new ArgumentNullException(
                               $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(_wpfTextView)} was null");
@@ -33,6 +36,11 @@ namespace CocoJumper.Provider
                     typeof(LetterWithMarker)
                 }
             };
+        }
+
+        public void ExitSearch()
+        {
+            _eventAggregator.SendMessage<ExitEvent>();
         }
 
         public void ClearAllElementsByType(ElementType type)
@@ -90,6 +98,11 @@ namespace CocoJumper.Provider
             Canvas.SetTop(letterReference, g.Bounds.Top);
 
             adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, letterReference, null);
+            _eventAggregator.SendMessage(new SearchEvent
+            {
+                StartPosition = stringStart,
+                Length = length
+            });
         }
 
         public void RenderSearcherControlByCaretPosition(string searchText, int matchNumber)

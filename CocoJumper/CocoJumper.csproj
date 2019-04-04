@@ -58,6 +58,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CodeHighlighter\FormatDefinition.cs" />
+    <Compile Include="CodeHighlighter\Tagger.cs" />
+    <Compile Include="CodeHighlighter\TaggerProvider.cs" />
     <Compile Include="Commands\CocoJumperMultiSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperCommandPackage.cs" />
     <Compile Include="Commands\CocoJumperSingleSearchCommand.cs" />
@@ -68,12 +71,17 @@
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Marker.cs" />
+    <Compile Include="Events\EventAggregator.cs" />
+    <Compile Include="Events\EventAggregatorExport.cs" />
+    <Compile Include="Events\ExitEvent.cs" />
+    <Compile Include="Events\SearchEvent.cs" />
     <Compile Include="Extensions\VsTextManagerExtensions.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <Compile Include="Listeners\InputListener.cs" />
     <Compile Include="Logic\CocoJumperLogic.cs" />
     <Compile Include="Models\MarkerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MefProvider.cs" />
     <Compile Include="Provider\WpfViewProvider.cs" />
     <Compile Include="WpfListener\CocoJumperListener.cs" />
   </ItemGroup>

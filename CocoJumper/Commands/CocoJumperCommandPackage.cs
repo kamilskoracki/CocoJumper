@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using CocoJumper.Provider;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -20,6 +22,8 @@ namespace CocoJumper.Commands
             await CocoJumperMultiSearchCommand.InitializeAsync(this);
             await CocoJumperSingleSearchCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
+
+            MefProvider.ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
         }
     }
 }
