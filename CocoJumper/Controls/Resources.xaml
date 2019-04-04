@@ -1,0 +1,59 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:CocoJumper.Controls">
+
+    <SolidColorBrush x:Key="LetterBackground" Color="Silver" />
+    <SolidColorBrush x:Key="BorderBackground" Color="ForestGreen" />
+
+    <Style TargetType="controls:Marker">
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="Transparent"></SolidColorBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Opacity">
+            <Setter.Value>
+                0.8
+            </Setter.Value>
+        </Setter>
+        <Setter Property="FontWeight">
+            <Setter.Value>
+                SemiBold
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Margin">
+            <Setter.Value>
+                0 2 0 0
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controls:Marker">
+                    <Border CornerRadius="2"
+                            Padding="1">
+                        <Border.Background>
+                            <SolidColorBrush Opacity="1" Color="{Binding Path=Color, Source={StaticResource LetterBackground}}" />
+                        </Border.Background>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Bottom"
+                                       Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type controls:Marker}},
+                                                         Path=MarkerText}">
+                            </TextBlock>
+                            <ContentControl Grid.Column="1"
+                                            Content="{TemplateBinding Content}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

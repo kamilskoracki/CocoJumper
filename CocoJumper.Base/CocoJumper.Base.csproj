@@ -52,12 +52,13 @@
     <Compile Include="Enum\CocoJumperState.cs" />
     <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\KeyEventType.cs" />
+    <Compile Include="Logic\ICocoJumperLogic.cs" />
     <Compile Include="Model\LineData.cs" />
+    <Compile Include="Model\SearchResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\IWpfViewProvider.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logic\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Key.snk" />
   </ItemGroup>

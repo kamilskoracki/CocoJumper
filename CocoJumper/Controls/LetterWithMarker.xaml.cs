@@ -1,4 +1,6 @@
-﻿namespace CocoJumper.Controls
+﻿using CocoJumper.Models;
+
+namespace CocoJumper.Controls
 {
     /// <summary>
     /// Interaction logic for LetterWithMarker.xaml
@@ -9,9 +11,13 @@
         {
             InitializeComponent();
 
-            letterContent.Text = text;
-            FontSize = lineHeight - 5;
-            Height = lineHeight;
+            MarkerText = text;
+            MarkerFontSize = lineHeight + MarkerViewModel.FontSizeFactor;
+            MarkerHeight = lineHeight + MarkerViewModel.HeightFactor;
         }
+
+        public double MarkerFontSize { get; set; }
+        public double MarkerHeight { get; set; }
+        public string MarkerText { get; set; }
     }
 }

@@ -58,15 +58,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Commands\CocoJumperCommand.cs" />
+    <Compile Include="Commands\CocoJumperMultiSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperCommandPackage.cs" />
+    <Compile Include="Commands\CocoJumperSingleSearchCommand.cs" />
+    <Compile Include="Controls\SearcherWithMarker.xaml.cs">
+      <DependentUpon>SearcherWithMarker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LetterWithMarker.xaml.cs">
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Marker.cs" />
     <Compile Include="Extensions\VsTextManagerExtensions.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <Compile Include="Listeners\InputListener.cs" />
     <Compile Include="Logic\CocoJumperLogic.cs" />
+    <Compile Include="Models\MarkerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Provider\WpfViewProvider.cs" />
     <Compile Include="WpfListener\CocoJumperListener.cs" />
@@ -82,6 +88,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Commands\Resources\CocoJumperSingleSearchCommand.png" />
     <VSCTCompile Include="Commands\CocoJumperCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
@@ -299,7 +306,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\SearcherWithMarker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\LetterWithMarker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Resources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

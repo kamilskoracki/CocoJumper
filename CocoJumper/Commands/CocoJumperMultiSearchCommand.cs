@@ -15,7 +15,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace CocoJumper.Commands
 {
-    internal class CocoJumperCommand
+    internal class CocoJumperMultiSearchCommand
     {
         public const int CommandId = 0x0100;
 
@@ -26,7 +26,7 @@ namespace CocoJumper.Commands
         private InputListener inputListener;
         private CocoJumperLogic logic;
 
-        private CocoJumperCommand(AsyncPackage _package, OleMenuCommandService _commandService, IVsTextManager _textManager, IVsEditorAdaptersFactoryService _editorAdaptersFactoryService)
+        private CocoJumperMultiSearchCommand(AsyncPackage _package, OleMenuCommandService _commandService, IVsTextManager _textManager, IVsEditorAdaptersFactoryService _editorAdaptersFactoryService)
         {
             package = _package ?? throw new ArgumentNullException(nameof(_package));
             _commandService = _commandService ?? throw new ArgumentNullException(nameof(_commandService));
@@ -38,7 +38,7 @@ namespace CocoJumper.Commands
             _commandService.AddCommand(menuItem);
         }
 
-        public static CocoJumperCommand Instance
+        public static CocoJumperMultiSearchCommand Instance
         {
             get;
             private set;
@@ -61,7 +61,7 @@ namespace CocoJumper.Commands
             IVsEditorAdaptersFactoryService editor = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
-            Instance = new CocoJumperCommand(package, commandService, vsTextManager, editor);
+            Instance = new CocoJumperMultiSearchCommand(package, commandService, vsTextManager, editor);
         }
 
         private void CleanupLogicAndInputListener()
@@ -83,23 +83,12 @@ namespace CocoJumper.Commands
             logic = new CocoJumperLogic(renderer);
             inputListener = new InputListener(textView);
             inputListener.KeyPressEvent += OnKeyboardAction;
-            logic.ActivateSearching();
-
-            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            //string title = "CocoJumperCommand";
-
-            //VsShellUtilities.ShowMessageBox(
-            //    this.package,
-            //    message,
-            //    title,
-            //    OLEMSGICON.OLEMSGICON_INFO,
-            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            logic.ActivateSearching(false);
         }
 
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)
         {
-            logic = logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperCommand)}, {nameof(logic)} is null");
+            logic = logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(logic)} is null");
             if (logic.KeyboardAction(key, eventType) == CocoJumperKeyboardActionResult.Finished)
             {
                 CleanupLogicAndInputListener();
