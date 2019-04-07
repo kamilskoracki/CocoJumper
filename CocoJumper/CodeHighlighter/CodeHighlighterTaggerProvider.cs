@@ -11,13 +11,13 @@ namespace CocoJumper.CodeHighlighter
     [Export]
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("code")]
-    [TagType(typeof(Tagger))]
-    public class TaggerProvider : IViewTaggerProvider
+    [TagType(typeof(CodeHighlighterTag))]
+    public class CodeHighlighterTaggerProvider : IViewTaggerProvider
     {
         private readonly IEventAggregator _eventAggregator;
 
         [ImportingConstructor]
-        public TaggerProvider(IEventAggregator eventAggregator)
+        public CodeHighlighterTaggerProvider(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }
@@ -25,15 +25,8 @@ namespace CocoJumper.CodeHighlighter
         [Import]
         internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
-        /// <summary>
-        /// This method is called by VS to generate the tagger
-        /// </summary>
-        /// <param name="textView"> The text view we are creating a tagger for</param>
-        /// <param name="buffer"> The buffer that the tagger will examine for instances of the current word</param>
-        /// <returns> Returns a HighlightWordTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            // Only provide highlighting on the top-level buffer
             if (textView.TextBuffer != buffer)
                 return null;
 

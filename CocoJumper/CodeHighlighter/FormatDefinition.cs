@@ -20,8 +20,4 @@ namespace CocoJumper.CodeHighlighter
             ZOrder = 5;
         }
     }
-
-    internal class x : ClassificationFormatDefinition
-    {
-    }
 }

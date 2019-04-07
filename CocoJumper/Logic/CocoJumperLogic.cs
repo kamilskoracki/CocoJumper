@@ -1,8 +1,11 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Events;
 using CocoJumper.Base.Logic;
 using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
+using CocoJumper.Events;
 using CocoJumper.Helpers;
+using CocoJumper.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +21,12 @@ namespace CocoJumper.Logic
         private string searchString;
         private CocoJumperState state;
         private IWpfViewProvider viewProvider;
+        private IEventAggregator _eventAggregator;
 
         public CocoJumperLogic(IWpfViewProvider _renderer)
         {
             state = CocoJumperState.Inactive;
+            _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
             searchResults = new List<SearchResult>();
             viewProvider = _renderer;
         }
@@ -35,7 +40,7 @@ namespace CocoJumper.Logic
             searchString = string.Empty;
             choosingString = string.Empty;
             isSingleSearch = isSingle;
-            viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
+       //     viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
         }
 
         public void Dispose()
@@ -71,34 +76,45 @@ namespace CocoJumper.Logic
                         return CocoJumperKeyboardActionResult.Ok;
                     }
                     state = CocoJumperState.Choosing;
-                    //TODO - other type?
-                    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
-                    foreach (var item in searchResults)
+
+                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                     {
-                        viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
-                    }
+                        searchEvents = searchResults.Select(p => new SearchEvent
+                        {
+                            Length = p.Length,
+                            StartPosition = p.Position
+                        }).ToList()
+                    });
 
                     viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
                     return CocoJumperKeyboardActionResult.Ok;
                 }
                 SearchCurrentView();
-                viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
+            //    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
 
                 if (isSingleSearch && !string.IsNullOrEmpty(searchString))
                 {
                     state = CocoJumperState.Choosing;
-                    foreach (var item in searchResults)
+ 
+                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                     {
-                        viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
-                    }
+                        searchEvents = searchResults.Select(p => new SearchEvent
+                        {
+                            Length = p.Length,
+                            StartPosition = p.Position
+                        }).ToList()
+                    });
                 }
                 else
                 {
-                    foreach (var item in searchResults)
+                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                     {
-                        //TODO - other type?
-                        viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
-                    }
+                        searchEvents = searchResults.Select(p => new SearchEvent
+                        {
+                            Length = p.Length,
+                            StartPosition = p.Position
+                        }).ToList()
+                    });
                 }
             }
             else if (state == CocoJumperState.Choosing && eventType != KeyEventType.ConfirmSearching)
@@ -120,11 +136,16 @@ namespace CocoJumper.Logic
                     state = CocoJumperState.Inactive;
                     return CocoJumperKeyboardActionResult.Finished;
                 }
-                viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
-                foreach (var item in searchResults.Where(x => x.Key.StartsWith(choosingString)))
+
+
+                _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                 {
-                    viewProvider.RenderControlByStringPosition(ElementType.LetterWithMarker, item.Position, item.Length, item.Key);
-                }
+                    searchEvents = searchResults.Where(x => x.Key.StartsWith(choosingString)).Select(p => new SearchEvent
+                    {
+                        Length = p.Length,
+                        StartPosition = p.Position
+                    }).ToList()
+                });
             }
 
             viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);

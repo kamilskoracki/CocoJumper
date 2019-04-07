@@ -1,4 +1,5 @@
-﻿using CocoJumper.Events;
+﻿using CocoJumper.Base.Events;
+using CocoJumper.Events;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -8,36 +9,29 @@ using System.Linq;
 
 namespace CocoJumper.CodeHighlighter
 {
-    public class Tagger : TextMarkerTag
-    {
-        public Tagger() : base("MarkerFormatDefinition/DocumentedCodeFormatDefinition")
-        {
-        }
-    }
-
-    internal class CodeHighlighterTagger : ITagger<Tagger>
+    internal class CodeHighlighterTagger : ITagger<CodeHighlighterTag>
     {
         private readonly DelegateListener<ExitEvent> _exitListener;
-        private readonly DelegateListener<SearchEvent> _listener;
+        private readonly DelegateListener<SearchResultEvent> _searchResultEvent;
         private readonly ITextView _textView;
         private ITextBuffer _buffer;
         private IEventAggregator _eventAggregator;
-        private List<ITagSpan<Tagger>> _taggers = new List<ITagSpan<Tagger>>();
+        private List<ITagSpan<CodeHighlighterTag>> _taggers = new List<ITagSpan<CodeHighlighterTag>>();
 
         public CodeHighlighterTagger(ITextView textView, ITextBuffer buffer, IEventAggregator eventAggregator)
         {
             _textView = textView;
             _buffer = buffer;
             _eventAggregator = eventAggregator;
-            _listener = new DelegateListener<SearchEvent>(OnSearch);
-            _eventAggregator.AddListener(_listener);
+            _searchResultEvent = new DelegateListener<SearchResultEvent>(OnSearch);
+            _eventAggregator.AddListener(_searchResultEvent);
             _exitListener = new DelegateListener<ExitEvent>(OnExit);
             _eventAggregator.AddListener(_exitListener);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        public IEnumerable<ITagSpan<Tagger>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<CodeHighlighterTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             return _taggers;
         }
@@ -49,18 +43,17 @@ namespace CocoJumper.CodeHighlighter
                 new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
         }
 
-        private void OnSearch(SearchEvent e)
+        private void OnSearch(SearchResultEvent e)
         {
-            SnapshotSpan snapshotSpan = new SnapshotSpan(_buffer.CurrentSnapshot, e.StartPosition, e.Length);
-            _taggers = _taggers
-                .Except(_taggers
-                    .Where(p => p.Span.Overlap(snapshotSpan) != null))
-                .ToList();
-
-            _taggers.Add(new TagSpan<Tagger>(snapshotSpan, new Tagger()));
+            _taggers = e.searchEvents.Select(p =>
+                new TagSpan<CodeHighlighterTag>(
+                    new SnapshotSpan(_buffer.CurrentSnapshot, p.StartPosition, p.Length),
+                    new CodeHighlighterTag()
+                ) as ITagSpan<CodeHighlighterTag>
+            ).ToList();
 
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
-                new SnapshotSpan(_buffer.CurrentSnapshot, new Span(e.StartPosition, e.Length))));
+                new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
         }
     }
 }

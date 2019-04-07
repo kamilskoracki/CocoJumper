@@ -52,6 +52,10 @@
     <Compile Include="Enum\CocoJumperState.cs" />
     <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\KeyEventType.cs" />
+    <Compile Include="EventModels\ExitEvent.cs" />
+    <Compile Include="EventModels\SearchEvent.cs" />
+    <Compile Include="EventModels\SearchResultEvent.cs" />
+    <Compile Include="EventModels\StartNewSearchEvent.cs" />
     <Compile Include="Logic\ICocoJumperLogic.cs" />
     <Compile Include="Model\LineData.cs" />
     <Compile Include="Model\SearchResult.cs" />
