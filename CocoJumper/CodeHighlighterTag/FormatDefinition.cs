@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 
-namespace CocoJumper.CodeHighlighter
+namespace CocoJumper.CodeHighlighterTag
 {
     [Export(typeof(EditorFormatDefinition))]
     [Name("MarkerFormatDefinition/DocumentedCodeFormatDefinition")]

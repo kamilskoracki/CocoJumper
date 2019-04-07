@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CocoJumper.CodeHighlighter
+namespace CocoJumper.CodeHighlighterTag
 {
     internal class CodeHighlighterTagger : ITagger<CodeHighlighterTag>
     {

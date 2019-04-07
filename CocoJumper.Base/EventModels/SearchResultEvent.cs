@@ -6,6 +6,7 @@ namespace CocoJumper.Base.Events
     public class SearchResultEvent
     {
         public List<SearchEvent> searchEvents;
+        public string SearchString;
 
         public SearchResultEvent()
         {

@@ -15,13 +15,13 @@ namespace CocoJumper.Logic
     public class CocoJumperLogic : ICocoJumperLogic
     {
         private const int searchLimit = 50;
+        private readonly List<SearchResult> searchResults;
+        private IEventAggregator _eventAggregator;
         private string choosingString;
         private bool isSingleSearch;
-        private readonly List<SearchResult> searchResults;
         private string searchString;
         private CocoJumperState state;
         private IWpfViewProvider viewProvider;
-        private IEventAggregator _eventAggregator;
 
         public CocoJumperLogic(IWpfViewProvider _renderer)
         {
@@ -40,12 +40,11 @@ namespace CocoJumper.Logic
             searchString = string.Empty;
             choosingString = string.Empty;
             isSingleSearch = isSingle;
-       //     viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
+            //     viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
         }
 
         public void Dispose()
         {
-            viewProvider?.Dispose();
             viewProvider = null;
         }
 
@@ -82,7 +81,8 @@ namespace CocoJumper.Logic
                         searchEvents = searchResults.Select(p => new SearchEvent
                         {
                             Length = p.Length,
-                            StartPosition = p.Position
+                            StartPosition = p.Position,
+                            Letters = p.Key
                         }).ToList()
                     });
 
@@ -90,18 +90,19 @@ namespace CocoJumper.Logic
                     return CocoJumperKeyboardActionResult.Ok;
                 }
                 SearchCurrentView();
-            //    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
+                //    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
 
                 if (isSingleSearch && !string.IsNullOrEmpty(searchString))
                 {
                     state = CocoJumperState.Choosing;
- 
+
                     _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                     {
                         searchEvents = searchResults.Select(p => new SearchEvent
                         {
                             Length = p.Length,
-                            StartPosition = p.Position
+                            StartPosition = p.Position,
+                            Letters = p.Key
                         }).ToList()
                     });
                 }
@@ -112,6 +113,7 @@ namespace CocoJumper.Logic
                         searchEvents = searchResults.Select(p => new SearchEvent
                         {
                             Length = p.Length,
+                            Letters = p.Key,
                             StartPosition = p.Position
                         }).ToList()
                     });
@@ -137,13 +139,13 @@ namespace CocoJumper.Logic
                     return CocoJumperKeyboardActionResult.Finished;
                 }
 
-
                 _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
                 {
                     searchEvents = searchResults.Where(x => x.Key.StartsWith(choosingString)).Select(p => new SearchEvent
                     {
                         Length = p.Length,
-                        StartPosition = p.Position
+                        StartPosition = p.Position,
+                        Letters = p.Key
                     }).ToList()
                 });
             }

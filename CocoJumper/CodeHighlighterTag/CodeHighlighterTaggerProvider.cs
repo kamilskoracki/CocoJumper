@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace CocoJumper.CodeHighlighter
+namespace CocoJumper.CodeHighlighterTag
 {
     [Export]
     [Export(typeof(IViewTaggerProvider))]
@@ -21,9 +21,6 @@ namespace CocoJumper.CodeHighlighter
         {
             _eventAggregator = eventAggregator;
         }
-
-        [Import]
-        internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {

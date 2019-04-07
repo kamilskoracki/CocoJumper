@@ -17,11 +17,8 @@ namespace CocoJumper.Provider
     public class WpfViewProvider : IWpfViewProvider
     {
         private readonly MarkerViewModel _markerViewModel;
-      //  private readonly IAdornmentLayer adornmentLayer;
-        private readonly Dictionary<ElementType, Type> elementTypes;
         private readonly IWpfTextView wpfTextView;
         private IEventAggregator _eventAggregator;
-        private SearcherWithMarker _searcherControl;
 
         public WpfViewProvider(IWpfTextView _wpfTextView)
         {
@@ -29,35 +26,11 @@ namespace CocoJumper.Provider
             _markerViewModel = new MarkerViewModel();
             wpfTextView = _wpfTextView ?? throw new ArgumentNullException(
                               $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(_wpfTextView)} was null");
-         //   adornmentLayer = _wpfTextView.GetAdornmentLayer("CocoJumper");
-            elementTypes = new Dictionary<ElementType, Type>
-            {
-                {
-                    ElementType.LetterWithMarker,
-                    typeof(LetterWithMarker)
-                }
-            };
         }
 
         public void ExitSearch()
         {
             _eventAggregator.SendMessage<ExitEvent>();
-        }
-
-      //  public void ClearAllElementsByType(ElementType type)
-      //  {
-            //for (int i = 0; i < adornmentLayer.Elements.Count; i++)
-            //{
-            //    if (adornmentLayer.Elements[i].Adornment.GetType() != elementTypes[type])
-            //        continue;
-            //    adornmentLayer.RemoveAdornment(adornmentLayer.Elements[i].Adornment);
-            //    i--;
-            //}
-  //      }
-
-        public void Dispose()
-        {
-     //       adornmentLayer.RemoveAllAdornments();
         }
 
         public IEnumerable<LineData> GetCurrentRenderedText()

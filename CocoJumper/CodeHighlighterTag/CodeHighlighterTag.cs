@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text.Tagging;
 
-namespace CocoJumper.CodeHighlighter
+namespace CocoJumper.CodeHighlighterTag
 {
     public class CodeHighlighterTag : TextMarkerTag
     {

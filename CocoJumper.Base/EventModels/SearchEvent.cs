@@ -2,7 +2,8 @@
 {
     public class SearchEvent
     {
-        public int Length { get; set; }
-        public int StartPosition { get; set; }
+        public int Length;
+        public int StartPosition;
+        public string Letters;
     }
 }
