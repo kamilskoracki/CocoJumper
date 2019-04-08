@@ -46,10 +46,11 @@ namespace CocoJumper.CodeMarkerTag
 
         private void OnSearch(SearchResultEvent e)
         {
+            double lineHeight = (_textView as IWpfTextView)?.LineHeight ?? 0;
             _taggers = e.searchEvents.Select(p =>
                 new TagSpan<IntraTextAdornmentTag>(
                     span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(p.StartPosition, 0)),
-                    tag: new IntraTextAdornmentTag(new Test(p.Letters), null, PositionAffinity.Predecessor)
+                    tag: new IntraTextAdornmentTag(new LetterWithMarker(p.Letters, lineHeight), null, PositionAffinity.Predecessor)
                     ) as ITagSpan<IntraTextAdornmentTag>
                 ).ToList();
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
