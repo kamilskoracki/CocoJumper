@@ -1,7 +1,6 @@
 ﻿using CocoJumper.Events;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -13,15 +12,18 @@ namespace CocoJumper.CodeMarkerTag
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("code")]
     [TagType(typeof(IntraTextAdornmentTag))]
-    public class CodeMarkerTaggerProvider : IViewTaggerProvider
+    public class CodeSearcherTaggerProvider : IViewTaggerProvider
     {
         private readonly IEventAggregator _eventAggregator;
 #pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
+
         [Import]
         internal IViewTagAggregatorFactoryService ViewTagAggregatorFactoryService;
+
 #pragma warning restore 649
+
         [ImportingConstructor]
-        public CodeMarkerTaggerProvider(IEventAggregator eventAggregator)
+        public CodeSearcherTaggerProvider(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }

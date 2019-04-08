@@ -1,15 +1,14 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.EventModels;
 using CocoJumper.Base.Events;
 using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
-using CocoJumper.Controls;
 using CocoJumper.Events;
 using CocoJumper.Models;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace CocoJumper.Provider
@@ -75,17 +74,12 @@ namespace CocoJumper.Provider
 
         public void RenderSearcherControlByCaretPosition(string searchText, int matchNumber)
         {
-            //_markerViewModel.Update(searchText, wpfTextView.LineHeight, matchNumber);
-
-            //if (_searcherControl != null) return;
-
-            //SnapshotSpan span = new SnapshotSpan(wpfTextView.TextSnapshot,
-            //    Span.FromBounds(wpfTextView.Caret.Position.BufferPosition.Position, wpfTextView.Caret.Position.BufferPosition.Position));
-
-            //_searcherControl = new SearcherWithMarker(_markerViewModel);
-            //Canvas.SetLeft(_searcherControl, wpfTextView.Caret.Left);
-            //Canvas.SetTop(_searcherControl, wpfTextView.Caret.Top);
-            //adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, _searcherControl, null);
+            _eventAggregator.SendMessage(new StartNewSearchEvent
+            {
+                StartPosition = wpfTextView.Caret.Position.BufferPosition.Position,
+                MatchNumber = matchNumber,
+                Text = searchText
+            });
         }
     }
 }

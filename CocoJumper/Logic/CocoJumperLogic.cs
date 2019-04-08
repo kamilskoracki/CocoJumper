@@ -136,6 +136,7 @@ namespace CocoJumper.Logic
                 {
                     viewProvider.MoveCaretTo(isFinished.Position);
                     state = CocoJumperState.Inactive;
+                    viewProvider.ExitSearch();
                     return CocoJumperKeyboardActionResult.Finished;
                 }
 
