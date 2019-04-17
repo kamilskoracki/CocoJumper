@@ -1,24 +1,21 @@
 ﻿using CocoJumper.Models;
-using System.Windows.Controls;
 
 namespace CocoJumper.Controls
 {
-    /// <summary>
-    /// Interaction logic for LetterWithMarker.xaml
-    /// </summary>
     public partial class LetterWithMarker
     {
         public LetterWithMarker(string text, double lineHeight)
         {
-            InitializeComponent();
-
             MarkerText = text;
             MarkerFontSize = lineHeight + MarkerViewModel.FontSizeFactor;
             MarkerHeight = lineHeight + MarkerViewModel.HeightFactor;
+            MarkerMinWidth = 10;
+            InitializeComponent();
         }
 
         public double MarkerFontSize { get; set; }
         public double MarkerHeight { get; set; }
+        public double MarkerMinWidth { get; set; }
         public string MarkerText { get; set; }
     }
 }

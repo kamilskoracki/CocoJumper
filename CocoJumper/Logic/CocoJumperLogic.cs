@@ -3,9 +3,7 @@ using CocoJumper.Base.Events;
 using CocoJumper.Base.Logic;
 using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
-using CocoJumper.Events;
 using CocoJumper.Helpers;
-using CocoJumper.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,54 +12,56 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
-        private const int searchLimit = 50;
-        private readonly List<SearchResult> searchResults;
-        private IEventAggregator _eventAggregator;
-        private string choosingString;
-        private bool isSingleSearch;
-        private string searchString;
-        private CocoJumperState state;
-        private IWpfViewProvider viewProvider;
+        private const int SearchLimit = 50;
+        private readonly List<SearchResult> _searchResults;
 
-        public CocoJumperLogic(IWpfViewProvider _renderer)
+        //  private IEventAggregator _eventAggregator;
+        private string _choosingString;
+
+        private bool _isSingleSearch;
+        private string _searchString;
+        private CocoJumperState _state;
+        private IWpfViewProvider _viewProvider;
+
+        public CocoJumperLogic(IWpfViewProvider renderer)
         {
-            state = CocoJumperState.Inactive;
-            _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
-            searchResults = new List<SearchResult>();
-            viewProvider = _renderer;
+            _state = CocoJumperState.Inactive;
+            //    _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
+            _searchResults = new List<SearchResult>();
+            _viewProvider = renderer;
         }
 
         public void ActivateSearching(bool isSingle)
         {
-            if (state != CocoJumperState.Inactive)
-                throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {state}");
+            if (_state != CocoJumperState.Inactive)
+                throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
 
-            state = CocoJumperState.Searching;
-            searchString = string.Empty;
-            choosingString = string.Empty;
-            isSingleSearch = isSingle;
-            //     viewProvider.RenderSearcherControlByCaretPosition(" ", 0);
+            _state = CocoJumperState.Searching;
+            _searchString = string.Empty;
+            _choosingString = string.Empty;
+            _isSingleSearch = isSingle;
+            RaiseRenderSearcherEvent();
         }
 
         public void Dispose()
         {
-            viewProvider = null;
+            _viewProvider = null;
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
         {
             if (eventType == KeyEventType.Cancel)
             {
-                viewProvider.ExitSearch();
+                EventHelper.EventHelperInstance.RaiseEvent<ExitEvent>();
                 return CocoJumperKeyboardActionResult.Finished;
             }
-            if (state == CocoJumperState.Searching)
+            if (_state == CocoJumperState.Searching)
             {
-                if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(searchString))
-                    searchString = searchString.Substring(0, searchString.Length - 1);
+                if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(_searchString))
+                    _searchString = _searchString.Substring(0, _searchString.Length - 1);
                 else if (eventType == KeyEventType.KeyPress && key.HasValue)
                 {
-                    searchString += char.ToLower(key.Value);
+                    _searchString += char.ToLower(key.Value);
                 }
                 else if (eventType == KeyEventType.KeyPress && !key.HasValue)
                 {
@@ -69,80 +69,56 @@ namespace CocoJumper.Logic
                 }
                 else if (eventType == KeyEventType.ConfirmSearching)
                 {
-                    if (searchResults.Count == 0)
+                    if (_searchResults.Count == 0)
                     {
-                        viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
+                        RaiseRenderSearcherEvent();
+
                         return CocoJumperKeyboardActionResult.Ok;
                     }
-                    state = CocoJumperState.Choosing;
+                    _state = CocoJumperState.Choosing;
 
-                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
-                    {
-                        searchEvents = searchResults.Select(p => new SearchEvent
-                        {
-                            Length = p.Length,
-                            StartPosition = p.Position,
-                            Letters = p.Key
-                        }).ToList()
-                    });
+                    RaiseSearchResultChangedEvent();
+                    RaiseRenderSearcherEvent();
 
-                    viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
                     return CocoJumperKeyboardActionResult.Ok;
                 }
                 SearchCurrentView();
-                //    viewProvider.ClearAllElementsByType(ElementType.LetterWithMarker);
 
-                if (isSingleSearch && !string.IsNullOrEmpty(searchString))
+                if (_isSingleSearch && !string.IsNullOrEmpty(_searchString))
                 {
-                    state = CocoJumperState.Choosing;
+                    _state = CocoJumperState.Choosing;
 
-                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
-                    {
-                        searchEvents = searchResults.Select(p => new SearchEvent
-                        {
-                            Length = p.Length,
-                            StartPosition = p.Position,
-                            Letters = p.Key
-                        }).ToList()
-                    });
+                    RaiseSearchResultChangedEvent();
                 }
                 else
                 {
-                    _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
-                    {
-                        searchEvents = searchResults.Select(p => new SearchEvent
-                        {
-                            Length = p.Length,
-                            Letters = p.Key,
-                            StartPosition = p.Position
-                        }).ToList()
-                    });
+                    RaiseSearchResultChangedEvent();
                 }
             }
-            else if (state == CocoJumperState.Choosing && eventType != KeyEventType.ConfirmSearching)
+            else if (_state == CocoJumperState.Choosing && eventType != KeyEventType.ConfirmSearching)
             {
-                if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(choosingString))
-                    choosingString = choosingString.Substring(0, choosingString.Length - 1);
+                if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(_choosingString))
+                    _choosingString = _choosingString.Substring(0, _choosingString.Length - 1);
                 else if (eventType == KeyEventType.KeyPress && key.HasValue)
                 {
-                    choosingString += char.ToLower(key.Value);
+                    _choosingString += char.ToLower(key.Value);
                 }
                 else if (eventType == KeyEventType.KeyPress && !key.HasValue)
                 {
                     throw new Exception($"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
                 }
-                SearchResult isFinished = searchResults.SingleOrDefault(x => x.Key.ToLower() == choosingString);
+                SearchResult isFinished = _searchResults.SingleOrDefault(x => x.Key.ToLower() == _choosingString);
                 if (isFinished != null)
                 {
-                    viewProvider.MoveCaretTo(isFinished.Position);
-                    state = CocoJumperState.Inactive;
-                    viewProvider.ExitSearch();
+                    _viewProvider.MoveCaretTo(isFinished.Position);
+                    _state = CocoJumperState.Inactive;
+                    EventHelper.EventHelperInstance.RaiseEvent<ExitEvent>();
                     return CocoJumperKeyboardActionResult.Finished;
                 }
 
-                _eventAggregator.SendMessage<SearchResultEvent>(new SearchResultEvent
+                EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
                 {
-                    searchEvents = searchResults.Where(x => x.Key.StartsWith(choosingString)).Select(p => new SearchEvent
+                    SearchEvents = _searchResults.Where(x => x.Key.StartsWith(_choosingString)).Select(p => new SearchEvent
                     {
                         Length = p.Length,
                         StartPosition = p.Position,
@@ -150,33 +126,51 @@ namespace CocoJumper.Logic
                     }).ToList()
                 });
             }
-
-            viewProvider.RenderSearcherControlByCaretPosition(searchString, searchResults.Count);
+            RaiseRenderSearcherEvent();
             return CocoJumperKeyboardActionResult.Ok;
+        }
+
+        private void RaiseSearchResultChangedEvent()
+        {
+            EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
+            {
+                SearchEvents = _searchResults.Select(p => new SearchEvent
+                {
+                    Length = p.Length,
+                    StartPosition = p.Position,
+                    Letters = p.Key
+                }).ToList()
+            });
+        }
+
+        private void RaiseRenderSearcherEvent()
+        {
+            int caretPosition = _viewProvider.GetCaretPosition();
+            EventHelper.EventHelperInstance.RaiseStartNewSearchEvent(_searchString, _searchResults.Count, caretPosition);
         }
 
         private void SearchCurrentView()
         {
-            if (state != CocoJumperState.Searching)
+            if (_state != CocoJumperState.Searching)
                 throw new Exception($"{nameof(SearchCurrentView)} - wrong state");
-            searchResults.Clear();
-            if (string.IsNullOrEmpty(searchString))
+            _searchResults.Clear();
+            if (string.IsNullOrEmpty(_searchString))
             {
                 return;
             }
 
             string keyToAdd = "";
-            var keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
-            foreach (var item in viewProvider.GetCurrentRenderedText())
+            var keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
+            foreach (var item in _viewProvider.GetCurrentRenderedText())
             {
                 int n = 0, count = 0;
 
-                while ((n = item.Data.IndexOf(searchString, n, StringComparison.InvariantCulture)) != -1)
+                while ((n = item.Data.IndexOf(_searchString, n, StringComparison.InvariantCulture)) != -1)
                 {
                     //TODO - revrite this to be more optimal
                     if (!keyboardKeys.MoveNext())
                     {
-                        keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
+                        keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
                         keyToAdd += "z";
                         keyboardKeys.MoveNext();
                     }
@@ -184,20 +178,20 @@ namespace CocoJumper.Logic
                     {
                         if (!keyboardKeys.MoveNext())
                         {
-                            keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(searchString[searchString.Length - 1]).GetEnumerator();
+                            keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
                             keyToAdd += "z";
                             keyboardKeys.MoveNext();
                         }
                     }
-                    searchResults.Add(new SearchResult
+                    _searchResults.Add(new SearchResult
                     {
-                        Length = searchString.Length,
+                        Length = _searchString.Length,
                         Position = n + item.Start,
                         Key = keyToAdd + keyboardKeys.Current
                     });
-                    n += searchString.Length;
+                    n += _searchString.Length;
                     count++;
-                    if (count > searchLimit)
+                    if (count > SearchLimit)
                         return;
                 }
             }

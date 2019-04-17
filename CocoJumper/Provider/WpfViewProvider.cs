@@ -1,46 +1,32 @@
-﻿using CocoJumper.Base.Enum;
-using CocoJumper.Base.EventModels;
-using CocoJumper.Base.Events;
-using CocoJumper.Base.Model;
+﻿using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
-using CocoJumper.Events;
-using CocoJumper.Models;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media;
+using Microsoft.VisualStudio.Text.Formatting;
 
 namespace CocoJumper.Provider
 {
     public class WpfViewProvider : IWpfViewProvider
     {
-        private readonly MarkerViewModel _markerViewModel;
-        private readonly IWpfTextView wpfTextView;
-        private IEventAggregator _eventAggregator;
+        private readonly IWpfTextView _wpfTextView;
 
-        public WpfViewProvider(IWpfTextView _wpfTextView)
+        public WpfViewProvider(IWpfTextView wpfTextView)
         {
-            _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
-            _markerViewModel = new MarkerViewModel();
-            wpfTextView = _wpfTextView ?? throw new ArgumentNullException(
-                              $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(_wpfTextView)} was null");
-        }
-
-        public void ExitSearch()
-        {
-            _eventAggregator.SendMessage<ExitEvent>();
+            this._wpfTextView = wpfTextView ?? throw new ArgumentNullException(
+                              $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(wpfTextView)} was null");
         }
 
         public IEnumerable<LineData> GetCurrentRenderedText()
         {
             //TODO - find better method to download all rendered lines, this may be slow
-            foreach (var item in wpfTextView.TextViewLines)
+            foreach (ITextViewLine item in _wpfTextView.TextViewLines)
             {
                 yield return new LineData
                 {
                     Start = item.Start.Position,
-                    Data = wpfTextView.TextSnapshot.GetText(item.Start.Position, item.Length),
+                    Data = _wpfTextView.TextSnapshot.GetText(item.Start.Position, item.Length),
                     DataLength = item.Length
                 };
             }
@@ -48,38 +34,17 @@ namespace CocoJumper.Provider
 
         public void MoveCaretTo(int position)
         {
-            SnapshotPoint snapshotPoint = new SnapshotPoint(wpfTextView.TextSnapshot, position);
-            if (wpfTextView.Selection.IsActive)
+            SnapshotPoint snapshotPoint = new SnapshotPoint(_wpfTextView.TextSnapshot, position);
+            if (_wpfTextView.Selection.IsActive)
             {
-                wpfTextView.Selection.Clear();
+                _wpfTextView.Selection.Clear();
             }
-            wpfTextView.Caret.MoveTo(snapshotPoint);
+            _wpfTextView.Caret.MoveTo(snapshotPoint);
         }
 
-        public SearchEvent GetSearchEvent(ElementType type, int stringStart, int length, string text)
+        public int GetCaretPosition()
         {
-            _markerViewModel.Update(text, wpfTextView.LineHeight, null);
-            IWpfTextViewLineCollection textViewLines = wpfTextView.TextViewLines;
-
-            SnapshotSpan span = new SnapshotSpan(wpfTextView.TextSnapshot, Span.FromBounds(stringStart, stringStart + length));
-
-            Geometry g = textViewLines.GetMarkerGeometry(span);
-            if (g == null) return null;
-            return new SearchEvent
-            {
-                Length = length,
-                StartPosition = stringStart
-            };
-        }
-
-        public void RenderSearcherControlByCaretPosition(string searchText, int matchNumber)
-        {
-            _eventAggregator.SendMessage(new StartNewSearchEvent
-            {
-                StartPosition = wpfTextView.Caret.Position.BufferPosition.Position,
-                MatchNumber = matchNumber,
-                Text = searchText
-            });
+            return _wpfTextView.Caret.Position.BufferPosition.Position;
         }
     }
 }

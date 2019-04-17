@@ -14,27 +14,19 @@ namespace CocoJumper.CodeMarkerTag
 {
     internal class CodeMarkerTagger : ITagger<IntraTextAdornmentTag>
     {
-        private readonly DelegateListener<ExitEvent> _exitListener;
-        private readonly DelegateListener<SearchResultEvent> _searchResultEvent;
-        private readonly DelegateListener<StartNewSearchEvent> _startNewSearchEvent;
         private readonly ITextView _textView;
-        private ITextBuffer _buffer;
-        private IEventAggregator _eventAggregator;
-        private List<ITagSpan<IntraTextAdornmentTag>> _taggers = new List<ITagSpan<IntraTextAdornmentTag>>();
-        private MarkerViewModel _searchMarkerViewModel;
-        private TagSpan<IntraTextAdornmentTag> _searcher;
+        private readonly ITextBuffer _buffer;
+        private readonly Dictionary<int, ITagSpan<IntraTextAdornmentTag>> _taggers = new Dictionary<int, ITagSpan<IntraTextAdornmentTag>>();
+        private readonly MarkerViewModel _searchMarkerViewModel;
+        private ITagSpan<IntraTextAdornmentTag> _searcher;
 
         public CodeMarkerTagger(ITextView textView, ITextBuffer buffer, IEventAggregator eventAggregator)
         {
             _textView = textView;
             _buffer = buffer;
-            _eventAggregator = eventAggregator;
-            _searchResultEvent = new DelegateListener<SearchResultEvent>(OnSearch);
-            _startNewSearchEvent = new DelegateListener<StartNewSearchEvent>(OnNewSearch);
-            _eventAggregator.AddListener(_searchResultEvent);
-            _eventAggregator.AddListener(_startNewSearchEvent);
-            _exitListener = new DelegateListener<ExitEvent>(OnExit);
-            _eventAggregator.AddListener(_exitListener);
+            eventAggregator.AddListener(new DelegateListener<SearchResultEvent>(OnSearch), true);
+            eventAggregator.AddListener(new DelegateListener<StartNewSearchEvent>(OnNewSearch), true);
+            eventAggregator.AddListener(new DelegateListener<ExitEvent>(OnExit), true);
             _searchMarkerViewModel = new MarkerViewModel();
         }
 
@@ -42,7 +34,7 @@ namespace CocoJumper.CodeMarkerTag
 
         public IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            return _taggers;
+            return _taggers.Values;
         }
 
         private void OnExit(ExitEvent e)
@@ -56,14 +48,26 @@ namespace CocoJumper.CodeMarkerTag
         private void OnSearch(SearchResultEvent e)
         {
             double lineHeight = (_textView as IWpfTextView)?.LineHeight ?? 0;
-            _taggers = e.searchEvents.Select(p =>
-                new TagSpan<IntraTextAdornmentTag>(
-                    span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(p.StartPosition, 0)),
-                    tag: new IntraTextAdornmentTag(new LetterWithMarker(p.Letters, lineHeight), null, PositionAffinity.Predecessor)
-                    ) as ITagSpan<IntraTextAdornmentTag>
-                ).ToList();
-            if (_searcher != null)
-                _taggers.Add(_searcher);
+
+            foreach (SearchEvent eSearchEvent in e.SearchEvents)
+            {
+                if (!_taggers.ContainsKey(eSearchEvent.StartPosition))
+                {
+                    _taggers.Add(eSearchEvent.StartPosition,
+                        new TagSpan<IntraTextAdornmentTag>(
+                            span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(eSearchEvent.StartPosition, 0)),
+                            tag: new IntraTextAdornmentTag(new LetterWithMarker(eSearchEvent.Letters, lineHeight), null,
+                                PositionAffinity.Predecessor)
+                        )
+                    );
+                }
+            }
+
+            List<int> keysToRemove = _taggers.Keys.Where(p => p != 0 && !e.SearchEvents.Exists(x => x.StartPosition == p)).ToList();
+            foreach (int i in keysToRemove)
+            {
+                _taggers.Remove(i);
+            }
 
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
                 new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
@@ -72,14 +76,15 @@ namespace CocoJumper.CodeMarkerTag
         private void OnNewSearch(StartNewSearchEvent e)
         {
             _searchMarkerViewModel.Update(e.Text, _textView.LineHeight, e.MatchNumber);
-            if (_searcher != null) return;
+            if (_searcher != null)
+                return;
 
             _searcher =
                 new TagSpan<IntraTextAdornmentTag>(
                     span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(e.StartPosition, 0)),
                     tag: new IntraTextAdornmentTag(new SearcherWithMarker(_searchMarkerViewModel), null, PositionAffinity.Predecessor)
                 );
-            _taggers.Add(_searcher);
+            _taggers.Add(0, _searcher);
 
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
                 new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));

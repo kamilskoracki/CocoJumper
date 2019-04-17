@@ -20,22 +20,22 @@ namespace CocoJumper.Commands
         public const int CommandId = 0x0100;
 
         public static readonly Guid CommandSet = new Guid("29fda481-672d-4ce9-9793-0bebf8b4c6c8");
-        private readonly IVsEditorAdaptersFactoryService editorAdaptersFactoryService;
-        private readonly AsyncPackage package;
-        private readonly IVsTextManager vsTextManager;
-        private InputListener inputListener;
-        private CocoJumperLogic logic;
+        private readonly IVsEditorAdaptersFactoryService _editorAdaptersFactoryService;
+        private readonly AsyncPackage _package;
+        private readonly IVsTextManager _vsTextManager;
+        private InputListener _inputListener;
+        private CocoJumperLogic _logic;
 
-        private CocoJumperMultiSearchCommand(AsyncPackage _package, OleMenuCommandService _commandService, IVsTextManager _textManager, IVsEditorAdaptersFactoryService _editorAdaptersFactoryService)
+        private CocoJumperMultiSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
         {
-            package = _package ?? throw new ArgumentNullException(nameof(_package));
-            _commandService = _commandService ?? throw new ArgumentNullException(nameof(_commandService));
-            vsTextManager = _textManager ?? throw new ArgumentNullException(nameof(_textManager));
-            editorAdaptersFactoryService = _editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(_editorAdaptersFactoryService));
+            this._package = package ?? throw new ArgumentNullException(nameof(package));
+            commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+            _vsTextManager = textManager ?? throw new ArgumentNullException(nameof(textManager));
+            this._editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
 
-            var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(Execute, menuCommandID);
-            _commandService.AddCommand(menuItem);
+            var menuCommandId = new CommandID(CommandSet, CommandId);
+            var menuItem = new MenuCommand(Execute, menuCommandId);
+            commandService.AddCommand(menuItem);
         }
 
         public static CocoJumperMultiSearchCommand Instance
@@ -48,7 +48,7 @@ namespace CocoJumper.Commands
         {
             get
             {
-                return package;
+                return _package;
             }
         }
 
@@ -66,30 +66,30 @@ namespace CocoJumper.Commands
 
         private void CleanupLogicAndInputListener()
         {
-            logic?.Dispose();
-            inputListener?.Dispose();
-            logic = null;
-            inputListener = null;
+            _logic?.Dispose();
+            _inputListener?.Dispose();
+            _logic = null;
+            _inputListener = null;
         }
 
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            IVsTextView textView = vsTextManager.GetActiveView();
-            IWpfTextView wpfTextView = editorAdaptersFactoryService.GetWpfTextView(textView);
+            IVsTextView textView = _vsTextManager.GetActiveView();
+            IWpfTextView wpfTextView = _editorAdaptersFactoryService.GetWpfTextView(textView);
 
             CleanupLogicAndInputListener();
             var renderer = new WpfViewProvider(wpfTextView);
-            logic = new CocoJumperLogic(renderer);
-            inputListener = new InputListener(textView);
-            inputListener.KeyPressEvent += OnKeyboardAction;
-            logic.ActivateSearching(false);
+            _logic = new CocoJumperLogic(renderer);
+            _inputListener = new InputListener(textView);
+            _inputListener.KeyPressEvent += OnKeyboardAction;
+            _logic.ActivateSearching(false);
         }
 
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)
         {
-            logic = logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(logic)} is null");
-            if (logic.KeyboardAction(key, eventType) == CocoJumperKeyboardActionResult.Finished)
+            _logic = _logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(_logic)} is null");
+            if (_logic.KeyboardAction(key, eventType) == CocoJumperKeyboardActionResult.Finished)
             {
                 CleanupLogicAndInputListener();
             }

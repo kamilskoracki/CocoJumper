@@ -74,12 +74,10 @@
       <DependentUpon>LetterWithMarker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Marker.cs" />
-    <Compile Include="Controls\Test.xaml.cs">
-      <DependentUpon>Test.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Events\EventAggregator.cs" />
     <Compile Include="Events\EventAggregatorExport.cs" />
     <Compile Include="Extensions\VsTextManagerExtensions.cs" />
+    <Compile Include="Helpers\EventHelper.cs" />
     <Compile Include="Helpers\KeyboardLayoutHelper.cs" />
     <Compile Include="Listeners\InputListener.cs" />
     <Compile Include="Logic\CocoJumperLogic.cs" />
@@ -327,10 +325,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Resources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\Test.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

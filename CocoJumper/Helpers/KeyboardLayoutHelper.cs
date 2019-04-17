@@ -16,17 +16,17 @@ namespace CocoJumper.Helpers
         {
             var inxs = GetIndexsOfKey(key) ?? GetIndexsOfKey('f') ?? throw new System.Exception($"{nameof(GetKeys)} for {key} returned null");
 
-            yield return GetCharByXY(0, inxs.j);
-            yield return GetCharByXY(1, inxs.j);
-            yield return GetCharByXY(2, inxs.j);
+            yield return GetCharByXy(0, inxs.j);
+            yield return GetCharByXy(1, inxs.j);
+            yield return GetCharByXy(2, inxs.j);
             for (int x = 1; x < 10; x++)
             {
-                yield return GetCharByXY(0, inxs.j + x);
-                yield return GetCharByXY(1, inxs.j + x);
-                yield return GetCharByXY(2, inxs.j + x);
-                yield return GetCharByXY(0, inxs.j - x);
-                yield return GetCharByXY(1, inxs.j - x);
-                yield return GetCharByXY(2, inxs.j - x);
+                yield return GetCharByXy(0, inxs.j + x);
+                yield return GetCharByXy(1, inxs.j + x);
+                yield return GetCharByXy(2, inxs.j + x);
+                yield return GetCharByXy(0, inxs.j - x);
+                yield return GetCharByXy(1, inxs.j - x);
+                yield return GetCharByXy(2, inxs.j - x);
             }
         }
 
@@ -35,7 +35,7 @@ namespace CocoJumper.Helpers
             return GetKeys(key).Where(x => x.HasValue).Select(x => x.Value);
         }
 
-        private static char? GetCharByXY(int x, int y)
+        private static char? GetCharByXy(int x, int y)
         {
             if (x >= Layouts.Length || x < 0)
                 return null;

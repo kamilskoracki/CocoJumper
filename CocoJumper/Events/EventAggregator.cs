@@ -389,7 +389,7 @@
             private readonly Type _messageType;
             private readonly MethodInfo _handlerMethod;
             private readonly bool _supportMessageInheritance;
-            private readonly Dictionary<Type, bool> supportedMessageTypes = new Dictionary<Type, bool>();
+            private readonly Dictionary<Type, bool> _supportedMessageTypes = new Dictionary<Type, bool>();
 
             public HandleMethodWrapper(MethodInfo handlerMethod, Type listenerInterface, Type messageType, bool supportMessageInheritance)
             {
@@ -397,7 +397,7 @@
                 _listenerInterface = listenerInterface;
                 _messageType = messageType;
                 _supportMessageInheritance = supportMessageInheritance;
-                supportedMessageTypes[messageType] = true;
+                _supportedMessageTypes[messageType] = true;
             }
 
             public bool Handles<TListener>() where TListener : class
@@ -414,11 +414,11 @@
 
                 bool handled;
                 Type messageType = message.GetType();
-                bool previousMessageType = supportedMessageTypes.TryGetValue(messageType, out handled);
+                bool previousMessageType = _supportedMessageTypes.TryGetValue(messageType, out handled);
                 if (!previousMessageType && _supportMessageInheritance)
                 {
                     handled = TypeHelper.IsAssignableFrom(_messageType, messageType);
-                    supportedMessageTypes[messageType] = handled;
+                    _supportedMessageTypes[messageType] = handled;
                 }
                 return handled;
             }

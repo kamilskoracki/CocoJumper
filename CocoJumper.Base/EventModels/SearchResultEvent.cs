@@ -5,12 +5,11 @@ namespace CocoJumper.Base.Events
 {
     public class SearchResultEvent
     {
-        public List<SearchEvent> searchEvents;
-        public string SearchString;
+        public List<SearchEvent> SearchEvents;
 
         public SearchResultEvent()
         {
-            searchEvents = new List<SearchEvent>();
+            SearchEvents = new List<SearchEvent>();
         }
     }
 }
