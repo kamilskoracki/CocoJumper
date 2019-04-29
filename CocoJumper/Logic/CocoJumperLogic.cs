@@ -7,6 +7,7 @@ using CocoJumper.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace CocoJumper.Logic
 {
@@ -14,8 +15,7 @@ namespace CocoJumper.Logic
     {
         private const int SearchLimit = 50;
         private readonly List<SearchResult> _searchResults;
-
-        //  private IEventAggregator _eventAggregator;
+        private readonly DispatcherTimer _timer;
         private string _choosingString;
 
         private bool _isSingleSearch;
@@ -26,7 +26,8 @@ namespace CocoJumper.Logic
         public CocoJumperLogic(IWpfViewProvider renderer)
         {
             _state = CocoJumperState.Inactive;
-            //    _eventAggregator = MefProvider.ComponentModel.GetService<IEventAggregator>();
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(350) };
+            _timer.Tick += OnTimerTick;
             _searchResults = new List<SearchResult>();
             _viewProvider = renderer;
         }
@@ -55,6 +56,7 @@ namespace CocoJumper.Logic
                 EventHelper.EventHelperInstance.RaiseEvent<ExitEvent>();
                 return CocoJumperKeyboardActionResult.Finished;
             }
+
             if (_state == CocoJumperState.Searching)
             {
                 if (eventType == KeyEventType.Backspace && !string.IsNullOrEmpty(_searchString))
@@ -84,16 +86,11 @@ namespace CocoJumper.Logic
                 }
                 SearchCurrentView();
 
-                if (_isSingleSearch && !string.IsNullOrEmpty(_searchString))
-                {
+                if (_isSingleSearch 
+                    && !string.IsNullOrEmpty(_searchString))
                     _state = CocoJumperState.Choosing;
 
-                    RaiseSearchResultChangedEvent();
-                }
-                else
-                {
-                    RaiseSearchResultChangedEvent();
-                }
+                RaiseSearchResultChangedEvent();
             }
             else if (_state == CocoJumperState.Choosing && eventType != KeyEventType.ConfirmSearching)
             {
@@ -116,22 +113,15 @@ namespace CocoJumper.Logic
                     return CocoJumperKeyboardActionResult.Finished;
                 }
 
-                EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
-                {
-                    SearchEvents = _searchResults.Where(x => x.Key.StartsWith(_choosingString)).Select(p => new SearchEvent
-                    {
-                        Length = p.Length,
-                        StartPosition = p.Position,
-                        Letters = p.Key
-                    }).ToList()
-                });
+                RaiseSearchResultChangedEventWithFilter();
             }
             RaiseRenderSearcherEvent();
             return CocoJumperKeyboardActionResult.Ok;
         }
 
-        private void RaiseSearchResultChangedEvent()
+        private void OnTimerTick(object sender, EventArgs e)
         {
+            _timer.Stop();
             EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
             {
                 SearchEvents = _searchResults.Select(p => new SearchEvent
@@ -141,6 +131,25 @@ namespace CocoJumper.Logic
                     Letters = p.Key
                 }).ToList()
             });
+        }
+
+        private void RaiseSearchResultChangedEventWithFilter()
+        {
+            EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
+            {
+                SearchEvents = _searchResults.Where(x => x.Key.StartsWith(_choosingString)).Select(p => new SearchEvent
+                {
+                    Length = p.Length,
+                    StartPosition = p.Position,
+                    Letters = p.Key
+                }).ToList()
+            });
+        }
+
+        private void RaiseSearchResultChangedEvent()
+        {
+            _timer.Stop();
+            _timer.Start();
         }
 
         private void RaiseRenderSearcherEvent()
@@ -167,7 +176,6 @@ namespace CocoJumper.Logic
 
                 while ((n = item.Data.IndexOf(_searchString, n, StringComparison.InvariantCulture)) != -1)
                 {
-                    //TODO - revrite this to be more optimal
                     if (!keyboardKeys.MoveNext())
                     {
                         keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
