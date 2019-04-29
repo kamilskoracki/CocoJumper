@@ -15,12 +15,6 @@ namespace CocoJumper.CodeMarkerTag
     public class CodeSearcherTaggerProvider : IViewTaggerProvider
     {
         private readonly IEventAggregator _eventAggregator;
-#pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
-
-        [Import]
-        internal IViewTagAggregatorFactoryService ViewTagAggregatorFactoryService;
-
-#pragma warning restore 649
 
         [ImportingConstructor]
         public CodeSearcherTaggerProvider(IEventAggregator eventAggregator)
@@ -31,9 +25,9 @@ namespace CocoJumper.CodeMarkerTag
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
             if (buffer == null)
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             if (buffer != textView.TextBuffer)
                 return null;
 

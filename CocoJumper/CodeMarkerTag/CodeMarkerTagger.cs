@@ -1,5 +1,6 @@
 ﻿using CocoJumper.Base.EventModels;
 using CocoJumper.Base.Events;
+using CocoJumper.Base.Logic;
 using CocoJumper.Controls;
 using CocoJumper.Events;
 using CocoJumper.Models;
@@ -14,10 +15,10 @@ namespace CocoJumper.CodeMarkerTag
 {
     internal class CodeMarkerTagger : ITagger<IntraTextAdornmentTag>
     {
-        private readonly ITextView _textView;
         private readonly ITextBuffer _buffer;
-        private readonly Dictionary<int, ITagSpan<IntraTextAdornmentTag>> _taggers = new Dictionary<int, ITagSpan<IntraTextAdornmentTag>>();
         private readonly MarkerViewModel _searchMarkerViewModel;
+        private readonly Dictionary<int, ITagSpan<IntraTextAdornmentTag>> _taggers = new Dictionary<int, ITagSpan<IntraTextAdornmentTag>>();
+        private readonly ITextView _textView;
         private ITagSpan<IntraTextAdornmentTag> _searcher;
 
         public CodeMarkerTagger(ITextView textView, ITextBuffer buffer, IEventAggregator eventAggregator)
@@ -41,36 +42,8 @@ namespace CocoJumper.CodeMarkerTag
         {
             _taggers.Clear();
             _searcher = null;
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
-                new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
-        }
 
-        private void OnSearch(SearchResultEvent e)
-        {
-            double lineHeight = (_textView as IWpfTextView)?.LineHeight ?? 0;
-
-            foreach (SearchEvent eSearchEvent in e.SearchEvents)
-            {
-                if (!_taggers.ContainsKey(eSearchEvent.StartPosition))
-                {
-                    _taggers.Add(eSearchEvent.StartPosition,
-                        new TagSpan<IntraTextAdornmentTag>(
-                            span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(eSearchEvent.StartPosition, 0)),
-                            tag: new IntraTextAdornmentTag(new LetterWithMarker(eSearchEvent.Letters, lineHeight), null,
-                                PositionAffinity.Predecessor)
-                        )
-                    );
-                }
-            }
-
-            List<int> keysToRemove = _taggers.Keys.Where(p => p != 0 && !e.SearchEvents.Exists(x => x.StartPosition == p)).ToList();
-            foreach (int i in keysToRemove)
-            {
-                _taggers.Remove(i);
-            }
-
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
-                new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
+            this.InvokeTagsChanged(TagsChanged, _buffer);
         }
 
         private void OnNewSearch(StartNewSearchEvent e)
@@ -86,8 +59,35 @@ namespace CocoJumper.CodeMarkerTag
                 );
             _taggers.Add(0, _searcher);
 
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
-                new SnapshotSpan(_buffer.CurrentSnapshot, new Span(0, _buffer.CurrentSnapshot.Length - 1))));
+            this.InvokeTagsChanged(TagsChanged, _buffer);
+        }
+
+        private void OnSearch(SearchResultEvent e)
+        {
+            double lineHeight = (_textView as IWpfTextView)?.LineHeight ?? 0;
+
+            foreach (SearchEvent eSearchEvent in e.SearchEvents)
+            {
+                if (_taggers.ContainsKey(eSearchEvent.StartPosition))
+                    continue;
+
+                _taggers.Add(eSearchEvent.StartPosition,
+                    new TagSpan<IntraTextAdornmentTag>(
+                        span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(eSearchEvent.StartPosition, 0)),
+                        tag: new IntraTextAdornmentTag(new LetterWithMarker(eSearchEvent.Letters, lineHeight), null,
+                            PositionAffinity.Predecessor)
+                    )
+                );
+            }
+
+            IEnumerable<int> keysToRemove =
+                _taggers.Keys
+                .Where(p => p != 0
+                            && !e.SearchEvents.Exists(x => x.StartPosition == p));
+            foreach (int i in keysToRemove)
+                _taggers.Remove(i);
+
+            this.InvokeTagsChanged(TagsChanged, _buffer);
         }
     }
 }
