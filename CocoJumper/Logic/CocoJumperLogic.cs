@@ -13,11 +13,10 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
-        private const int SearchLimit = 50;
+        private const int SearchLimit = 5000;
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer;
         private string _choosingString;
-
         private bool _isSingleSearch;
         private string _searchString;
         private CocoJumperState _state;
@@ -86,7 +85,7 @@ namespace CocoJumper.Logic
                 }
                 SearchCurrentView();
 
-                if (_isSingleSearch 
+                if (_isSingleSearch
                     && !string.IsNullOrEmpty(_searchString))
                     _state = CocoJumperState.Choosing;
 
@@ -160,6 +159,7 @@ namespace CocoJumper.Logic
 
         private void SearchCurrentView()
         {
+            int totalCount = 0;
             if (_state != CocoJumperState.Searching)
                 throw new Exception($"{nameof(SearchCurrentView)} - wrong state");
             _searchResults.Clear();
@@ -168,39 +168,26 @@ namespace CocoJumper.Logic
                 return;
             }
 
-            string keyToAdd = "";
-            var keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
-            foreach (var item in _viewProvider.GetCurrentRenderedText())
+            using (IEnumerator<string> keyboardKeys = KeyboardLayoutHelper
+                .GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator())
             {
-                int n = 0, count = 0;
-
-                while ((n = item.Data.IndexOf(_searchString, n, StringComparison.InvariantCulture)) != -1)
+                foreach (LineData item in _viewProvider.GetCurrentRenderedText())
                 {
-                    if (!keyboardKeys.MoveNext())
+                    int n = 0;
+
+                    while ((n = item.Data.IndexOf(_searchString, n, StringComparison.InvariantCulture)) != -1)
                     {
-                        keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
-                        keyToAdd += "z";
                         keyboardKeys.MoveNext();
-                    }
-                    if (keyboardKeys.Current == 'z')
-                    {
-                        if (!keyboardKeys.MoveNext())
+                        _searchResults.Add(new SearchResult
                         {
-                            keyboardKeys = KeyboardLayoutHelper.GetKeysNotNull(_searchString[_searchString.Length - 1]).GetEnumerator();
-                            keyToAdd += "z";
-                            keyboardKeys.MoveNext();
-                        }
+                            Length = _searchString.Length,
+                            Position = n + item.Start,
+                            Key = keyboardKeys.Current
+                        });
+                        n += _searchString.Length;
+                        if (++totalCount > SearchLimit)
+                            return;
                     }
-                    _searchResults.Add(new SearchResult
-                    {
-                        Length = _searchString.Length,
-                        Position = n + item.Start,
-                        Key = keyToAdd + keyboardKeys.Current
-                    });
-                    n += _searchString.Length;
-                    count++;
-                    if (count > SearchLimit)
-                        return;
                 }
             }
         }

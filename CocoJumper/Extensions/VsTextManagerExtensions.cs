@@ -15,7 +15,7 @@ namespace CocoJumper.Extensions
             int res;
             if ((res = vsTextManager.GetActiveView(MustHaveFocusFlag, null, out IVsTextView view)) != VSConstants.S_OK)
             {
-                throw new Exception($"GetActiveView returned {res}, 0 status was expected");
+                throw new Exception($"GetActiveView returned {res}, S_OK(0) status was expected");
             }
             return view ?? throw new Exception($"{nameof(GetActiveView)} is trying to return empty value");
         }

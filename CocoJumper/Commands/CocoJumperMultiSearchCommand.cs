@@ -1,4 +1,5 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Logic;
 using CocoJumper.Extensions;
 using CocoJumper.Listeners;
 using CocoJumper.Logic;
@@ -24,7 +25,7 @@ namespace CocoJumper.Commands
         private readonly AsyncPackage _package;
         private readonly IVsTextManager _vsTextManager;
         private InputListener _inputListener;
-        private CocoJumperLogic _logic;
+        private ICocoJumperLogic _logic;
 
         private CocoJumperMultiSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
         {
@@ -33,8 +34,8 @@ namespace CocoJumper.Commands
             _vsTextManager = textManager ?? throw new ArgumentNullException(nameof(textManager));
             this._editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
 
-            var menuCommandId = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(Execute, menuCommandId);
+            CommandID menuCommandId = new CommandID(CommandSet, CommandId);
+            MenuCommand menuItem = new MenuCommand(Execute, menuCommandId);
             commandService.AddCommand(menuItem);
         }
 
@@ -79,7 +80,7 @@ namespace CocoJumper.Commands
             IWpfTextView wpfTextView = _editorAdaptersFactoryService.GetWpfTextView(textView);
 
             CleanupLogicAndInputListener();
-            var renderer = new WpfViewProvider(wpfTextView);
+            WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
             _logic = new CocoJumperLogic(renderer);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;

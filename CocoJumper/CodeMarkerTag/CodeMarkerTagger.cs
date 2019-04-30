@@ -83,7 +83,8 @@ namespace CocoJumper.CodeMarkerTag
             IEnumerable<int> keysToRemove =
                 _taggers.Keys
                 .Where(p => p != 0
-                            && !e.SearchEvents.Exists(x => x.StartPosition == p));
+                            && !e.SearchEvents.Exists(x => x.StartPosition == p))
+                .ToList();
             foreach (int i in keysToRemove)
                 _taggers.Remove(i);
 

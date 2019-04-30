@@ -8,7 +8,6 @@ using System.ComponentModel.Composition;
 
 namespace CocoJumper.CodeMarkerTag
 {
-    [Export]
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("code")]
     [TagType(typeof(IntraTextAdornmentTag))]

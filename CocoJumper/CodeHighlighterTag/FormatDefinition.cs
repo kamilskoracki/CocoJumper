@@ -12,11 +12,10 @@ namespace CocoJumper.CodeHighlighterTag
     {
         public FormatDefinition()
         {
-            var orange = Brushes.Orange.Clone();
+            SolidColorBrush orange = Brushes.Orange.Clone();
             orange.Opacity = 0.25;
             Fill = orange;
             Border = new Pen(Brushes.Gray, 1.0);
-            DisplayName = "Highlight Word";
             ZOrder = 5;
         }
     }

@@ -20,7 +20,6 @@ namespace CocoJumper.Provider
 
         public IEnumerable<LineData> GetCurrentRenderedText()
         {
-            //TODO - find better method to download all rendered lines, this may be slow
             foreach (ITextViewLine item in _wpfTextView.TextViewLines)
             {
                 yield return new LineData

@@ -42,9 +42,6 @@ namespace CocoJumper.Listeners
 
         public void Dispose()
         {
-            //TODO - as i know we dont need to take care of events when object will be deleted anyway?
-            foreach (Delegate eventDelegate in KeyPressEvent.GetInvocationList())
-                KeyPressEvent -= (KeyboardEventDelegate)eventDelegate;
             _adapter?.RemoveCommandFilter(this);
             _nextCommandHandler = null;
         }

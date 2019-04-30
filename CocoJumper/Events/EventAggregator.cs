@@ -172,7 +172,7 @@
                     }
                 });
 
-            var wasAnyListenerCalled = listenerCalledCount > 0;
+            bool wasAnyListenerCalled = listenerCalledCount > 0;
 
             if (!wasAnyListenerCalled)
             {
@@ -267,7 +267,7 @@
                     if (ContainsListener(listener))
                         return;
 
-                    var listenerWrapper = new ListenerWrapper(listener, RemoveListenerWrapper, holdStrongReference, supportMessageInheritance);
+                    ListenerWrapper listenerWrapper = new ListenerWrapper(listener, RemoveListenerWrapper, holdStrongReference, supportMessageInheritance);
                     if (listenerWrapper.Count == 0)
                         throw new ArgumentException("IListener<T> is not implemented", "listener");
                     _listeners.Add(listenerWrapper);
@@ -330,13 +330,13 @@
                 else
                     _reference = new WeakReferenceImpl(listener);
 
-                var listenerInterfaces = TypeHelper.GetBaseInterfaceType(listener.GetType())
+                IEnumerable<Type> listenerInterfaces = TypeHelper.GetBaseInterfaceType(listener.GetType())
                                                    .Where(w => TypeHelper.DirectlyClosesGeneric(w, typeof(IListener<>)));
 
-                foreach (var listenerInterface in listenerInterfaces)
+                foreach (Type listenerInterface in listenerInterfaces)
                 {
-                    var messageType = TypeHelper.GetFirstGenericType(listenerInterface);
-                    var handleMethod = TypeHelper.GetMethod(listenerInterface, HandleMethodName);
+                    Type messageType = TypeHelper.GetFirstGenericType(listenerInterface);
+                    MethodInfo handleMethod = TypeHelper.GetMethod(listenerInterface, HandleMethodName);
 
                     HandleMethodWrapper handler = new HandleMethodWrapper(handleMethod, listenerInterface, messageType, supportMessageInheritance);
                     _handlers.Add(handler);
@@ -361,7 +361,7 @@
             public void TryHandle<TListener>(object message, out bool wasHandled)
                 where TListener : class
             {
-                var target = _reference.Target;
+                object target = _reference.Target;
                 wasHandled = false;
                 if (target == null)
                 {
@@ -369,7 +369,7 @@
                     return;
                 }
 
-                foreach (var handler in _handlers)
+                foreach (HandleMethodWrapper handler in _handlers)
                 {
                     bool thisOneHandled = false;
                     handler.TryHandle<TListener>(target, message, out thisOneHandled);
@@ -449,10 +449,10 @@
 #if NETFX_CORE
                 var interfaces = type.GetTypeInfo().ImplementedInterfaces.ToList();
 #else
-                var interfaces = type.GetInterfaces().ToList();
+                List<Type> interfaces = type.GetInterfaces().ToList();
 #endif
 
-                foreach (var @interface in interfaces.ToArray())
+                foreach (Type @interface in interfaces.ToArray())
                 {
                     interfaces.AddRange(GetBaseInterfaceType(@interface));
                 }
@@ -495,7 +495,7 @@
 #if NETFX_CORE
                 var messageType = type.GetTypeInfo().GenericTypeArguments.First();
 #else
-                var messageType = type.GetGenericArguments().First();
+                Type messageType = type.GetGenericArguments().First();
 #endif
                 return messageType;
             }
@@ -506,7 +506,7 @@
                 var typeInfo = type.GetTypeInfo();
                 var handleMethod = typeInfo.GetDeclaredMethod(methodName);
 #else
-                var handleMethod = type.GetMethod(methodName);
+                MethodInfo handleMethod = type.GetMethod(methodName);
 
 #endif
                 return handleMethod;
