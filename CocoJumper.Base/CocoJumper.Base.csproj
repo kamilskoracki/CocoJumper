@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="Enum\CocoJumperKeyboardActionResult.cs" />
     <Compile Include="Enum\CocoJumperState.cs" />
-    <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\KeyEventType.cs" />
     <Compile Include="EventModels\ExitEvent.cs" />
     <Compile Include="EventModels\SearchEvent.cs" />
