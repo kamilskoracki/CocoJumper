@@ -150,8 +150,11 @@ namespace CocoJumper.Logic
                 if (_isHighlight)
                 {
                     int caretPosition = _viewProvider.GetCaretPosition();
-                    _viewProvider.MoveCaretTo(isFinished.Position);
-                    _viewProvider.SelectFromTo(caretPosition, caretPosition < isFinished.Position ? isFinished.Position + 2 : isFinished.Position);
+                    int toPosition = caretPosition < isFinished.Position
+                        ? isFinished.Position + 1
+                        : isFinished.Position;
+                    _viewProvider.MoveCaretTo(toPosition);
+                    _viewProvider.SelectFromTo(caretPosition, toPosition);
                 }
                 else
                 {
@@ -162,7 +165,7 @@ namespace CocoJumper.Logic
 
                 return CocoJumperKeyboardActionResult.Finished;
             }
-
+            RaiseRenderSearcherEvent();
             RaiseSearchResultChangedEventWithFilter();
             return CocoJumperKeyboardActionResult.Ok;
         }

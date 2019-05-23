@@ -33,6 +33,8 @@ namespace CocoJumper.Provider
 
         public void MoveCaretTo(int position)
         {
+            if (position > _wpfTextView.TextSnapshot.Length)
+                position = _wpfTextView.TextSnapshot.Length;
             SnapshotPoint snapshotPoint = new SnapshotPoint(_wpfTextView.TextSnapshot, position);
             if (_wpfTextView.Selection.IsActive)
             {
@@ -59,7 +61,7 @@ namespace CocoJumper.Provider
             {
                 _wpfTextView.Selection.Clear();
             }
-            _wpfTextView.Selection.Select(destinationSnapshotSpan, false);
+            _wpfTextView.Selection.Select(destinationSnapshotSpan, from > to);
         }
 
         public int GetCaretPosition()
