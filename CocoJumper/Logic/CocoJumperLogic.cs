@@ -150,6 +150,7 @@ namespace CocoJumper.Logic
                 if (_isHighlight)
                 {
                     int caretPosition = _viewProvider.GetCaretPosition();
+                    _viewProvider.MoveCaretTo(isFinished.Position);
                     _viewProvider.SelectFromTo(caretPosition, caretPosition < isFinished.Position ? isFinished.Position + 2 : isFinished.Position);
                 }
                 else
