@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="CocoJumper.478dbe1f-cf5a-4153-a3c8-fee937acf83d" Version="1.0" Language="en-US" Publisher="Coco" />
         <DisplayName>CocoJumper</DisplayName>
-        <Description>Empty VSIX Project.</Description>
+        <Description xml:space="preserve">Boost your productivity by easly jumping in code.</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 16.0)" />
