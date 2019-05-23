@@ -15,18 +15,20 @@ namespace CocoJumper.Logic
     {
         private readonly int _searchLimit;
         private readonly List<SearchResult> _searchResults;
-        private readonly DispatcherTimer _timer;
+        private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
         private bool _isSingleSearch;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
 
-        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval)
+        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval, int automaticallyExitInterval)
         {
             _state = CocoJumperState.Inactive;
             _searchLimit = searchLimit;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(timeInterval) };
+            _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(automaticallyExitInterval) };
+            _autoExitDispatcherTimer.Tick += OnAutoExitTimerEvent;
             _timer.Tick += OnTimerTick;
             _searchResults = new List<SearchResult>();
             _viewProvider = renderer;
@@ -36,7 +38,8 @@ namespace CocoJumper.Logic
         {
             if (_state != CocoJumperState.Inactive)
                 throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
-
+            _autoExitDispatcherTimer.Stop();
+            _autoExitDispatcherTimer.Start();
             _state = CocoJumperState.Searching;
             _searchString = string.Empty;
             _choosingString = string.Empty;
@@ -48,11 +51,16 @@ namespace CocoJumper.Logic
         {
             _viewProvider = null;
             _timer.Tick -= OnTimerTick;
+            _autoExitDispatcherTimer.Tick -= OnAutoExitTimerEvent;
+            _timer.Stop();
+            _autoExitDispatcherTimer.Stop();
             RaiseExitEvent();
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
         {
+            _autoExitDispatcherTimer.Stop();
+            _autoExitDispatcherTimer.Start();
             if (eventType != KeyEventType.Cancel)
                 return _state == CocoJumperState.Searching
                     ? PerformSearching(key, eventType)
@@ -92,6 +100,12 @@ namespace CocoJumper.Logic
                     })
                     .ToList()
             });
+        }
+
+        private void OnAutoExitTimerEvent(object sender, EventArgs e)
+        {
+            _autoExitDispatcherTimer.Stop();
+            RaiseExitEvent();
         }
 
         private CocoJumperKeyboardActionResult PerformChoosing(char? key, KeyEventType eventType)
@@ -241,7 +255,7 @@ namespace CocoJumper.Logic
 
                         n += _searchString.Length;
 
-                        if (++totalCount > _searchLimit)
+                        if (_searchLimit != 0 && ++totalCount > _searchLimit)
                             return;
                     }
                 }

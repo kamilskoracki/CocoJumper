@@ -79,10 +79,12 @@ namespace CocoJumper.Commands
             ThreadHelper.ThrowIfNotOnUIThread();
             IVsTextView textView = _vsTextManager.GetActiveView();
             IWpfTextView wpfTextView = _editorAdaptersFactoryService.GetWpfTextView(textView);
+            CocoJumperCommandPackage cocoJumperCommandPackage = (CocoJumperCommandPackage)_package;
 
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
-            _logic = new CocoJumperLogic(renderer, ((CocoJumperCommandPackage)_package).LimitResults, ((CocoJumperCommandPackage)_package).TimerInterval);
+
+            _logic = new CocoJumperLogic(renderer, cocoJumperCommandPackage.LimitResults, cocoJumperCommandPackage.TimerInterval, cocoJumperCommandPackage.AutomaticallyExitInterval);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(true);

@@ -66,6 +66,9 @@
     <Compile Include="CodeMarkerTag\CodeMarkerTaggerProvider.cs" />
     <Compile Include="Commands\CocoJumperMultiSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperCommandPackage.cs" />
+    <Compile Include="Commands\CocoJumperOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Commands\CocoJumperSingleSearchCommand.cs" />
     <Compile Include="Controls\SearcherWithMarker.xaml.cs">
       <DependentUpon>SearcherWithMarker.xaml</DependentUpon>
