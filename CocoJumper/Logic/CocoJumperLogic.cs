@@ -133,7 +133,10 @@ namespace CocoJumper.Logic
                     break;
 
                 case KeyEventType.KeyPress when key.HasValue:
-                    _choosingString += GeyKeyValue(key);
+                    char keyValue = GeyKeyValue(key);
+                    if (_searchResults
+                        .Any(x => x.Key.ToLower().StartsWith(_choosingString + keyValue)))
+                        _choosingString += keyValue;
                     break;
 
                 case KeyEventType.KeyPress:
