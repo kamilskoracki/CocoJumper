@@ -45,6 +45,15 @@ namespace CocoJumper.Commands
             }
         }
 
+        public bool JumpAfterChoosedElement
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.JumpAfterChoosedElement;
+            }
+        }
+
         public int AutomaticallyExitInterval
         {
             get

@@ -76,7 +76,11 @@ namespace CocoJumper.Commands
 
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
-            _logic = new CocoJumperLogic(renderer, cocoJumperCommandPackage.LimitResults, cocoJumperCommandPackage.TimerInterval, cocoJumperCommandPackage.AutomaticallyExitInterval);
+            _logic = new CocoJumperLogic(renderer,
+                cocoJumperCommandPackage.LimitResults,
+                cocoJumperCommandPackage.TimerInterval,
+                cocoJumperCommandPackage.AutomaticallyExitInterval,
+                cocoJumperCommandPackage.JumpAfterChoosedElement);
 
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;

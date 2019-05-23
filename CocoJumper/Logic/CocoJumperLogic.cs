@@ -18,14 +18,16 @@ namespace CocoJumper.Logic
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
         private bool _isSingleSearch;
+        private bool _jumpAfterChoosedElement;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
 
-        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval, int automaticallyExitInterval)
+        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval, int automaticallyExitInterval, bool jumpAfterChoosedElement)
         {
             _state = CocoJumperState.Inactive;
             _searchLimit = searchLimit;
+            _jumpAfterChoosedElement = jumpAfterChoosedElement;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(timeInterval) };
             _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(automaticallyExitInterval) };
             _autoExitDispatcherTimer.Tick += OnAutoExitTimerEvent;
@@ -80,10 +82,21 @@ namespace CocoJumper.Logic
             EventHelper.EventHelperInstance.RaiseEvent<ExitEvent>();
         }
 
+        private static string RemoveLastChar(string text)
+        {
+            return text.Substring(0, text.Length - 1);
+        }
+
         private static void ThrowKeyPressWithNullKeyException(char? key = null)
         {
             throw new Exception(
                 $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
+        }
+
+        private void OnAutoExitTimerEvent(object sender, EventArgs e)
+        {
+            _autoExitDispatcherTimer.Stop();
+            RaiseExitEvent();
         }
 
         private void OnTimerTick(object sender, EventArgs e)
@@ -101,13 +114,6 @@ namespace CocoJumper.Logic
                     .ToList()
             });
         }
-
-        private void OnAutoExitTimerEvent(object sender, EventArgs e)
-        {
-            _autoExitDispatcherTimer.Stop();
-            RaiseExitEvent();
-        }
-
         private CocoJumperKeyboardActionResult PerformChoosing(char? key, KeyEventType eventType)
         {
             switch (eventType)
@@ -138,7 +144,7 @@ namespace CocoJumper.Logic
 
             if (isFinished != null)
             {
-                _viewProvider.MoveCaretTo(isFinished.Position);
+                _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
                 _state = CocoJumperState.Inactive;
                 RaiseExitEvent();
 
@@ -217,12 +223,6 @@ namespace CocoJumper.Logic
                     .ToList()
             });
         }
-
-        private static string RemoveLastChar(string text)
-        {
-            return text.Substring(0, text.Length - 1);
-        }
-
         private void SearchCurrentView()
         {
             int totalCount = 0;

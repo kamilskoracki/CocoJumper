@@ -26,6 +26,13 @@ namespace CocoJumper.Commands
         [DefaultValue(5000)]
         public int AutomaticallyExitInterval { get; set; }
 
+
+        [Category(GeneralCategory)]
+        [DisplayName("Jump after choosed element")]
+        [Description("If set to True, logic will move caret to the end of choosed element.")]
+        [DefaultValue(false)]
+        public bool JumpAfterChoosedElement { get; set; }
+
         public override void SaveSettingsToStorage()
         {
             if (AutomaticallyExitInterval <= 0)
