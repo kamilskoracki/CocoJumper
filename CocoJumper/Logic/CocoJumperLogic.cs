@@ -98,6 +98,13 @@ namespace CocoJumper.Logic
         {
             switch (eventType)
             {
+                case KeyEventType.Backspace when _isSingleSearch:
+                    _state = CocoJumperState.Searching;
+                    _searchString = string.Empty;
+                    _searchResults.Clear();
+                    RaiseRenderSearcherEvent();
+                    break;
+
                 case KeyEventType.Backspace when !string.IsNullOrEmpty(_choosingString):
                     _choosingString = RemoveLastChar(_choosingString);
                     break;
@@ -161,7 +168,7 @@ namespace CocoJumper.Logic
             SearchCurrentView();
 
             if (_isSingleSearch
-                && !string.IsNullOrEmpty(_searchString))
+                && !string.IsNullOrEmpty(_searchString) && _searchResults.Count != 0)
                 _state = CocoJumperState.Choosing;
 
             RaiseSearchResultChangedEvent();
