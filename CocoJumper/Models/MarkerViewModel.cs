@@ -5,8 +5,8 @@ namespace CocoJumper.Models
 {
     public class MarkerViewModel : INotifyPropertyChanged
     {
-        internal const int FontSizeFactor = -5;
-        internal const int HeightFactor = -4;
+        internal const int FontSizeFactor = -4;
+        internal const int HeightFactor = -2;
         private double _markerFontSize;
 
         private double _markerHeight;

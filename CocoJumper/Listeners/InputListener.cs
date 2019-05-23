@@ -14,7 +14,7 @@ namespace CocoJumper.Listeners
     {
         public KeyboardEventDelegate KeyPressEvent;
 
-        private static readonly uint[] cmdIdsForCancelAction = {
+        private static readonly uint[] CmdIdsForCancelAction = {
             (uint)VSConstants.VSStd2KCmdID.LEFT,
             (uint)VSConstants.VSStd2KCmdID.UP,
             (uint)VSConstants.VSStd2KCmdID.DOWN,
@@ -27,41 +27,38 @@ namespace CocoJumper.Listeners
             (uint)VSConstants.VSStd2KCmdID.CANCEL
         };
 
-        private static readonly uint[] cmdIdsForAcceptSelectionAction = {
+        private static readonly uint[] CmdIdsForAcceptSelectionAction = {
             (uint)VSConstants.VSStd2KCmdID.RETURN
         };
 
         private readonly IVsTextView _adapter;
-        private IOleCommandTarget nextCommandHandler;
+        private IOleCommandTarget _nextCommandHandler;
 
         public InputListener(IVsTextView adapter)
         {
             _adapter = adapter ?? throw new ArgumentNullException($"Argument {nameof(adapter)} in {nameof(InputListener)} was empty");
-            _adapter.AddCommandFilter(this, out nextCommandHandler);
+            _adapter.AddCommandFilter(this, out _nextCommandHandler);
         }
 
         public void Dispose()
         {
-            //TODO - as i know we dont need to take care of events when object will be deleted anyway?
-            foreach (Delegate eventDelegate in KeyPressEvent.GetInvocationList())
-                KeyPressEvent -= (KeyboardEventDelegate)eventDelegate;
             _adapter?.RemoveCommandFilter(this);
-            nextCommandHandler = null;
+            _nextCommandHandler = null;
         }
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-            if (cmdIdsForCancelAction.Contains(nCmdID))
+            if (CmdIdsForCancelAction.Contains(nCmdId))
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Cancel);
-            else if (cmdIdsForAcceptSelectionAction.Contains(nCmdID))
+            else if (CmdIdsForAcceptSelectionAction.Contains(nCmdId))
                 KeyPressEvent?.Invoke(this, null, KeyEventType.ConfirmSearching);
-            else if (nCmdID == (int)VSConstants.VSStd2KCmdID.BACKSPACE)
+            else if (nCmdId == (int)VSConstants.VSStd2KCmdID.BACKSPACE)
                 KeyPressEvent?.Invoke(this, null, KeyEventType.Backspace);
-            else if (TryGetTypedChar(pguidCmdGroup, nCmdID, pvaIn, out char typedChar))
+            else if (TryGetTypedChar(pguidCmdGroup, nCmdId, pvaIn, out char typedChar))
                 KeyPressEvent?.Invoke(this, typedChar, KeyEventType.KeyPress);
             else
-                return nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdId, nCmdexecopt, pvaIn, pvaOut);
 
             return VSConstants.S_OK;
         }
@@ -69,13 +66,13 @@ namespace CocoJumper.Listeners
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-            return nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return _nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
 
-        private static bool TryGetTypedChar(Guid cmdGroup, uint nCmdID, IntPtr pvaIn, out char typedChar)
+        private static bool TryGetTypedChar(Guid cmdGroup, uint nCmdId, IntPtr pvaIn, out char typedChar)
         {
             typedChar = char.MinValue;
-            if (cmdGroup != VSConstants.VSStd2K || nCmdID != (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
+            if (cmdGroup != VSConstants.VSStd2K || nCmdId != (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
                 return false;
             typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
             return true;

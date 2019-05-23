@@ -2,10 +2,10 @@
 {
     public class LineData
     {
-        private string data;
+        private string _data;
         public int DataLength;
         public int Start;
 
-        public string Data { get => data; set => data = value.ToLower(); }
+        public string Data { get => _data; set => _data = value.ToLower(); }
     }
 }

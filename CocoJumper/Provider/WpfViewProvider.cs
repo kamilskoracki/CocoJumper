@@ -1,65 +1,31 @@
-﻿using CocoJumper.Base.Enum;
-using CocoJumper.Base.Model;
+﻿using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
-using CocoJumper.Controls;
-using CocoJumper.Models;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Formatting;
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace CocoJumper.Provider
 {
     public class WpfViewProvider : IWpfViewProvider
     {
-        private readonly MarkerViewModel _markerViewModel;
-        private readonly IAdornmentLayer adornmentLayer;
-        private readonly Dictionary<ElementType, Type> elementTypes;
-        private readonly IWpfTextView wpfTextView;
-        private SearcherWithMarker _searcherControl;
+        private readonly IWpfTextView _wpfTextView;
 
-        public WpfViewProvider(IWpfTextView _wpfTextView)
+        public WpfViewProvider(IWpfTextView wpfTextView)
         {
-            _markerViewModel = new MarkerViewModel();
-            wpfTextView = _wpfTextView ?? throw new ArgumentNullException(
-                              $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(_wpfTextView)} was null");
-            adornmentLayer = _wpfTextView.GetAdornmentLayer("CocoJumper");
-            elementTypes = new Dictionary<ElementType, Type>
-            {
-                {
-                    ElementType.LetterWithMarker,
-                    typeof(LetterWithMarker)
-                }
-            };
-        }
-
-        public void ClearAllElementsByType(ElementType type)
-        {
-            for (int i = 0; i < adornmentLayer.Elements.Count; i++)
-            {
-                if (adornmentLayer.Elements[i].Adornment.GetType() != elementTypes[type])
-                    continue;
-                adornmentLayer.RemoveAdornment(adornmentLayer.Elements[i].Adornment);
-                i--;
-            }
-        }
-
-        public void Dispose()
-        {
-            adornmentLayer.RemoveAllAdornments();
+            this._wpfTextView = wpfTextView ?? throw new ArgumentNullException(
+                              $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(wpfTextView)} was null");
         }
 
         public IEnumerable<LineData> GetCurrentRenderedText()
         {
-            //TODO - find better method to download all rendered lines, this may be slow
-            foreach (var item in wpfTextView.TextViewLines)
+            foreach (ITextViewLine item in _wpfTextView.TextViewLines)
             {
                 yield return new LineData
                 {
                     Start = item.Start.Position,
-                    Data = wpfTextView.TextSnapshot.GetText(item.Start.Position, item.Length),
+                    Data = _wpfTextView.TextSnapshot.GetText(item.Start.Position, item.Length),
                     DataLength = item.Length
                 };
             }
@@ -67,44 +33,40 @@ namespace CocoJumper.Provider
 
         public void MoveCaretTo(int position)
         {
-            SnapshotPoint snapshotPoint = new SnapshotPoint(wpfTextView.TextSnapshot, position);
-            if (wpfTextView.Selection.IsActive)
+            if (position > _wpfTextView.TextSnapshot.Length)
+                position = _wpfTextView.TextSnapshot.Length;
+            SnapshotPoint snapshotPoint = new SnapshotPoint(_wpfTextView.TextSnapshot, position);
+            if (_wpfTextView.Selection.IsActive)
             {
-                wpfTextView.Selection.Clear();
+                _wpfTextView.Selection.Clear();
             }
-            wpfTextView.Caret.MoveTo(snapshotPoint);
+            _wpfTextView.Caret.MoveTo(snapshotPoint);
         }
 
-        public void RenderControlByStringPosition(ElementType type, int stringStart, int length, string text)
+        public void SelectFromTo(int from, int to)
         {
-            _markerViewModel.Update(text, wpfTextView.LineHeight, null);
-            IWpfTextViewLineCollection textViewLines = wpfTextView.TextViewLines;
-
-            SnapshotSpan span = new SnapshotSpan(wpfTextView.TextSnapshot, Span.FromBounds(stringStart, stringStart + length));
-
-            Geometry g = textViewLines.GetMarkerGeometry(span);
-            if (g == null) return;
-
-            LetterWithMarker letterReference = new LetterWithMarker(text, wpfTextView.LineHeight);
-            Canvas.SetLeft(letterReference, g.Bounds.Left);
-            Canvas.SetTop(letterReference, g.Bounds.Top);
-
-            adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, letterReference, null);
+            if (from < 0)
+                from = 0;
+            if (to < 0)
+                to = 0;
+            if (from > _wpfTextView.TextSnapshot.Length)
+                from = _wpfTextView.TextSnapshot.Length;
+            if (to > _wpfTextView.TextSnapshot.Length)
+                to = _wpfTextView.TextSnapshot.Length;
+            SnapshotPoint snapshotPointFrom = new SnapshotPoint(_wpfTextView.TextSnapshot, from);
+            SnapshotPoint snapshotPointTo = new SnapshotPoint(_wpfTextView.TextSnapshot, to);
+            SnapshotSpan destinationSnapshotSpan = from > to ? new SnapshotSpan(snapshotPointTo, snapshotPointFrom) : new SnapshotSpan(snapshotPointFrom, snapshotPointTo);
+            
+            if (_wpfTextView.Selection.IsActive)
+            {
+                _wpfTextView.Selection.Clear();
+            }
+            _wpfTextView.Selection.Select(destinationSnapshotSpan, from > to);
         }
 
-        public void RenderSearcherControlByCaretPosition(string searchText, int matchNumber)
+        public int GetCaretPosition()
         {
-            _markerViewModel.Update(searchText, wpfTextView.LineHeight, matchNumber);
-
-            if (_searcherControl != null) return;
-
-            SnapshotSpan span = new SnapshotSpan(wpfTextView.TextSnapshot,
-                Span.FromBounds(wpfTextView.Caret.Position.BufferPosition.Position, wpfTextView.Caret.Position.BufferPosition.Position));
-
-            _searcherControl = new SearcherWithMarker(_markerViewModel);
-            Canvas.SetLeft(_searcherControl, wpfTextView.Caret.Left);
-            Canvas.SetTop(_searcherControl, wpfTextView.Caret.Top);
-            adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, _searcherControl, null);
+            return _wpfTextView.Caret.Position.BufferPosition.Position;
         }
     }
 }
