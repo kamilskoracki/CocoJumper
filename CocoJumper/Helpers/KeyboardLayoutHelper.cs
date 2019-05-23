@@ -5,7 +5,6 @@ namespace CocoJumper.Helpers
 {
     public static class KeyboardLayoutHelper
     {
-        //TODO - add more layouts?
         private static readonly string[] Layouts = {
             "qwertyuiop",
             "asdfghjkl",
@@ -22,6 +21,7 @@ namespace CocoJumper.Helpers
 
                 keyToAdd += "z";
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         private static IEnumerable<char?> GetAllKeys(char key)

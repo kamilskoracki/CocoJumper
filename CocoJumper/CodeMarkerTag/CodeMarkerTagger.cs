@@ -35,6 +35,8 @@ namespace CocoJumper.CodeMarkerTag
 
         public IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
+            if (!_textView.HasAggregateFocus || _textView.IsClosed)
+                return Enumerable.Empty<ITagSpan<IntraTextAdornmentTag>>();
             return _taggers.Values;
         }
 
@@ -42,12 +44,13 @@ namespace CocoJumper.CodeMarkerTag
         {
             _taggers.Clear();
             _searcher = null;
-
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
 
         private void OnNewSearch(StartNewSearchEvent e)
         {
+            if (!_textView.HasAggregateFocus || _textView.IsClosed)
+                return;
             _searchMarkerViewModel.Update(e.Text, _textView.LineHeight, e.MatchNumber);
             if (_searcher != null)
                 return;
@@ -64,6 +67,8 @@ namespace CocoJumper.CodeMarkerTag
 
         private void OnSearch(SearchResultEvent e)
         {
+            if (!_textView.HasAggregateFocus || _textView.IsClosed)
+                return;
             double lineHeight = (_textView as IWpfTextView)?.LineHeight ?? 0;
 
             foreach (SearchEvent eSearchEvent in e.SearchEvents)

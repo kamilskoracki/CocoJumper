@@ -13,8 +13,7 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
-        private const int SearchLimit = 5000;
-        private const int TimerInterval = 350;
+        private readonly int _searchLimit;
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer;
         private string _choosingString;
@@ -23,10 +22,11 @@ namespace CocoJumper.Logic
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
 
-        public CocoJumperLogic(IWpfViewProvider renderer)
+        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval)
         {
             _state = CocoJumperState.Inactive;
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(TimerInterval) };
+            _searchLimit = searchLimit;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(timeInterval) };
             _timer.Tick += OnTimerTick;
             _searchResults = new List<SearchResult>();
             _viewProvider = renderer;
@@ -48,6 +48,7 @@ namespace CocoJumper.Logic
         {
             _viewProvider = null;
             _timer.Tick -= OnTimerTick;
+            RaiseExitEvent();
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
@@ -233,7 +234,7 @@ namespace CocoJumper.Logic
 
                         n += _searchString.Length;
 
-                        if (++totalCount > SearchLimit)
+                        if (++totalCount > _searchLimit)
                             return;
                     }
                 }

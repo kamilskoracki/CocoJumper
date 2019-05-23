@@ -1,4 +1,5 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Logic;
 using CocoJumper.Extensions;
 using CocoJumper.Listeners;
 using CocoJumper.Logic;
@@ -11,7 +12,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.ComponentModel.Design;
-using CocoJumper.Base.Logic;
 using Task = System.Threading.Tasks.Task;
 
 namespace CocoJumper.Commands
@@ -82,7 +82,7 @@ namespace CocoJumper.Commands
 
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
-            _logic = new CocoJumperLogic(renderer);
+            _logic = new CocoJumperLogic(renderer, ((CocoJumperCommandPackage)_package).LimitResults, ((CocoJumperCommandPackage)_package).TimerInterval);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(true);

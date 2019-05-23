@@ -28,7 +28,7 @@ namespace CocoJumper.CodeHighlighterTag
         public IEnumerable<ITagSpan<CodeHighlighterTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (_searchEvents == null
-                || _searchEvents.Count == 0)
+                || _searchEvents.Count == 0 || !_textView.HasAggregateFocus || _textView.IsClosed)
                 yield break;
 
             foreach (SearchEvent searchEvent in _searchEvents)
@@ -42,12 +42,14 @@ namespace CocoJumper.CodeHighlighterTag
 
         private void OnExit(ExitEvent e)
         {
-            _searchEvents.Clear();
+            _searchEvents?.Clear();
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
 
         private void OnSearch(SearchResultEvent e)
         {
+            if (!_textView.HasAggregateFocus || _textView.IsClosed)
+                return;
             _searchEvents = e.SearchEvents;
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }

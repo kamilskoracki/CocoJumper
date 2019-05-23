@@ -45,13 +45,7 @@ namespace CocoJumper.Commands
             private set;
         }
 
-        private IAsyncServiceProvider ServiceProvider
-        {
-            get
-            {
-                return _package;
-            }
-        }
+        private IAsyncServiceProvider ServiceProvider => _package;
 
         public static async Task InitializeAsync(AsyncPackage package)
         {
@@ -81,7 +75,8 @@ namespace CocoJumper.Commands
 
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
-            _logic = new CocoJumperLogic(renderer);
+            _logic = new CocoJumperLogic(renderer, ((CocoJumperCommandPackage)_package).LimitResults, ((CocoJumperCommandPackage)_package).TimerInterval);
+
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(false);
