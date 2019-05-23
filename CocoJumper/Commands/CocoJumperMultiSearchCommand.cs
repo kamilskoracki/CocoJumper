@@ -84,7 +84,7 @@ namespace CocoJumper.Commands
 
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
-            _logic.ActivateSearching(false);
+            _logic.ActivateSearching(false, false);
         }
 
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)

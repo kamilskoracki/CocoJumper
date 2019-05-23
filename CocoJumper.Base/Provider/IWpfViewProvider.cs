@@ -9,6 +9,8 @@ namespace CocoJumper.Base.Provider
 
         void MoveCaretTo(int position);
 
+        void SelectFromTo(int from, int to);
+
         int GetCaretPosition();
     }
 }

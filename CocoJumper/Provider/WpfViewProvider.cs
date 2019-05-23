@@ -2,9 +2,9 @@
 using CocoJumper.Base.Provider;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Formatting;
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.Text.Formatting;
 
 namespace CocoJumper.Provider
 {
@@ -39,6 +39,27 @@ namespace CocoJumper.Provider
                 _wpfTextView.Selection.Clear();
             }
             _wpfTextView.Caret.MoveTo(snapshotPoint);
+        }
+
+        public void SelectFromTo(int from, int to)
+        {
+            if (from < 0)
+                from = 0;
+            if (to < 0)
+                to = 0;
+            if (from > _wpfTextView.TextSnapshot.Length)
+                from = _wpfTextView.TextSnapshot.Length;
+            if (to > _wpfTextView.TextSnapshot.Length)
+                to = _wpfTextView.TextSnapshot.Length;
+            SnapshotPoint snapshotPointFrom = new SnapshotPoint(_wpfTextView.TextSnapshot, from);
+            SnapshotPoint snapshotPointTo = new SnapshotPoint(_wpfTextView.TextSnapshot, to);
+            SnapshotSpan destinationSnapshotSpan = from > to ? new SnapshotSpan(snapshotPointTo, snapshotPointFrom) : new SnapshotSpan(snapshotPointFrom, snapshotPointTo);
+            
+            if (_wpfTextView.Selection.IsActive)
+            {
+                _wpfTextView.Selection.Clear();
+            }
+            _wpfTextView.Selection.Select(destinationSnapshotSpan, false);
         }
 
         public int GetCaretPosition()

@@ -16,19 +16,19 @@ using Task = System.Threading.Tasks.Task;
 
 namespace CocoJumper.Commands
 {
-    internal sealed class CocoJumperSingleSearchCommand
+    internal sealed class CocoJumperSingleSearchHighlightCommand
     {
-        public const int CommandId = 4129;
+        public const int CommandId = 4130;
 
         public static readonly Guid CommandSet = new Guid("29fda481-672d-4ce9-9793-0bebf8b4c6c8");
-
         private readonly IVsEditorAdaptersFactoryService _editorAdaptersFactoryService;
         private readonly AsyncPackage _package;
         private readonly IVsTextManager _vsTextManager;
         private InputListener _inputListener;
         private ICocoJumperLogic _logic;
+        private readonly AsyncPackage package;
 
-        private CocoJumperSingleSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
+        private CocoJumperSingleSearchHighlightCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
         {
             this._package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -40,17 +40,17 @@ namespace CocoJumper.Commands
             commandService.AddCommand(menuItem);
         }
 
-        public static CocoJumperSingleSearchCommand Instance
+        public static CocoJumperSingleSearchHighlightCommand Instance
         {
             get;
             private set;
         }
 
-        private IAsyncServiceProvider ServiceProvider
+        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
         {
             get
             {
-                return _package;
+                return this.package;
             }
         }
 
@@ -63,7 +63,7 @@ namespace CocoJumper.Commands
             IVsEditorAdaptersFactoryService editor = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
-            Instance = new CocoJumperSingleSearchCommand(package, commandService, vsTextManager, editor);
+            Instance = new CocoJumperSingleSearchHighlightCommand(package, commandService, vsTextManager, editor);
         }
 
         private void CleanupLogicAndInputListener()
@@ -91,7 +91,7 @@ namespace CocoJumper.Commands
                 cocoJumperCommandPackage.JumpAfterChoosedElement);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
-            _logic.ActivateSearching(true, false);
+            _logic.ActivateSearching(true, true);
         }
 
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)

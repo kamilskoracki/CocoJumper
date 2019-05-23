@@ -25,6 +25,7 @@ namespace CocoJumper.Commands
             await base.InitializeAsync(cancellationToken, progress);
 
             MefProvider.ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
+            await CocoJumper.Commands.CocoJumperSingleSearchHighlightCommand.InitializeAsync(this);
         }
 
         public int LimitResults

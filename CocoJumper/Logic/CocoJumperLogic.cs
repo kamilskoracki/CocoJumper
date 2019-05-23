@@ -18,7 +18,8 @@ namespace CocoJumper.Logic
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
         private bool _isSingleSearch;
-        private bool _jumpAfterChoosedElement;
+        private readonly bool _jumpAfterChoosedElement;
+        private bool _isHighlight;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
@@ -36,7 +37,7 @@ namespace CocoJumper.Logic
             _viewProvider = renderer;
         }
 
-        public void ActivateSearching(bool isSingle)
+        public void ActivateSearching(bool isSingle, bool isHighlight)
         {
             if (_state != CocoJumperState.Inactive)
                 throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
@@ -46,6 +47,7 @@ namespace CocoJumper.Logic
             _searchString = string.Empty;
             _choosingString = string.Empty;
             _isSingleSearch = isSingle;
+            _isHighlight = isHighlight;
             RaiseRenderSearcherEvent();
         }
 
@@ -114,6 +116,7 @@ namespace CocoJumper.Logic
                     .ToList()
             });
         }
+
         private CocoJumperKeyboardActionResult PerformChoosing(char? key, KeyEventType eventType)
         {
             switch (eventType)
@@ -144,7 +147,15 @@ namespace CocoJumper.Logic
 
             if (isFinished != null)
             {
-                _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
+                if (_isHighlight)
+                {
+                    int caretPosition = _viewProvider.GetCaretPosition();
+                    _viewProvider.SelectFromTo(caretPosition, caretPosition < isFinished.Position ? isFinished.Position + 2 : isFinished.Position);
+                }
+                else
+                {
+                    _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
+                }
                 _state = CocoJumperState.Inactive;
                 RaiseExitEvent();
 
@@ -223,6 +234,7 @@ namespace CocoJumper.Logic
                     .ToList()
             });
         }
+
         private void SearchCurrentView()
         {
             int totalCount = 0;
