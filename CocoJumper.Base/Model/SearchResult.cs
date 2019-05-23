@@ -2,10 +2,10 @@
 {
     public class SearchResult
     {
-        private string key;
+        private string _key;
         public int Length;
         public int Position;
 
-        public string Key { get => key; set => key = value.ToLower(); }
+        public string Key { get => _key; set => _key = value.ToLower(); }
     }
 }

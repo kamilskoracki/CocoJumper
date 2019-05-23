@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using CocoJumper.Provider;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -9,6 +11,7 @@ namespace CocoJumper.Commands
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideOptionPage(typeof(CocoJumperOptions), "Environment\\Keyboard", "CocoJumper", 0, 0, true, ProvidesLocalizedCategoryName = false)]
     [Guid(PackageGuidString)]
     public sealed class CocoJumperCommandPackage : AsyncPackage
     {
@@ -20,6 +23,45 @@ namespace CocoJumper.Commands
             await CocoJumperMultiSearchCommand.InitializeAsync(this);
             await CocoJumperSingleSearchCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
+
+            MefProvider.ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
+            await CocoJumper.Commands.CocoJumperSingleSearchHighlightCommand.InitializeAsync(this);
+        }
+
+        public int LimitResults
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.LimitResults;
+            }
+        }
+
+        public int TimerInterval
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.TimerInterval;
+            }
+        }
+
+        public bool JumpAfterChoosedElement
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.JumpAfterChoosedElement;
+            }
+        }
+
+        public int AutomaticallyExitInterval
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.AutomaticallyExitInterval;
+            }
         }
     }
 }
