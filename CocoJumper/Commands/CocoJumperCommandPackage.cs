@@ -15,7 +15,7 @@ namespace CocoJumper.Commands
     [Guid(PackageGuidString)]
     public sealed class CocoJumperCommandPackage : AsyncPackage
     {
-        public const string PackageGuidString = "cd8f3562-1f57-4c09-b5c1-01fe488ab080";
+        public const string PackageGuidString = "cd8f3565-1f57-4c09-b5c1-01fe488ab080";
 
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
