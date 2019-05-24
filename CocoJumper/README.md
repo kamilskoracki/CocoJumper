@@ -1,4 +1,4 @@
-# CocoJumper
+# CocoJumper [![Build status](https://dev.azure.com/CocoJumper/CocoJumper/_apis/build/status/CocoJumper-CI)](https://dev.azure.com/CocoJumper/CocoJumper/_build/latest?definitionId=1) ![Deployment](https://vsrm.dev.azure.com/CocoJumper/_apis/public/Release/badge/85a8e6fb-6fe8-4ec1-8208-3b2e3edb272e/1/1)
 CocoJumper is addon to Visual Studio based on [AceJump](https://github.com/acejump/AceJump) extension for JetBrains IDE. It let you jump to any symbol visible on currently selected tab in editor.
 
 # Shortcuts
