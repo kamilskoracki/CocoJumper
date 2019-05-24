@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocoJumper", "CocoJumper\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocoJumper.Base", "CocoJumper.Base\CocoJumper.Base.csproj", "{18B9FB8C-A8A0-4C0F-A821-8D1C332E56EE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFIles", "SolutionFIles", "{8A8DCC79-7AD5-4BCF-8415-80C171A7492C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
