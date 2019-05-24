@@ -43,6 +43,8 @@ namespace CocoJumper.CodeHighlighterTag
         private void OnExit(ExitEvent e)
         {
             _searchEvents?.Clear();
+            if (_buffer == null || TagsChanged == null)
+                return;
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
 

@@ -63,12 +63,15 @@ namespace CocoJumper.Logic
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
         {
-            _autoExitDispatcherTimer.Stop();
-            _autoExitDispatcherTimer.Start();
-            if (eventType != KeyEventType.Cancel)
+            if (eventType != KeyEventType.Cancel && _state != CocoJumperState.Inactive)
+            {
+                _autoExitDispatcherTimer.Stop();
+                _autoExitDispatcherTimer.Start();
+
                 return _state == CocoJumperState.Searching
                     ? PerformSearching(key, eventType)
                     : PerformChoosing(key, eventType);
+            }
 
             RaiseExitEvent();
             return CocoJumperKeyboardActionResult.Finished;
@@ -79,8 +82,9 @@ namespace CocoJumper.Logic
             return char.ToLower(key.GetValueOrDefault());
         }
 
-        private static void RaiseExitEvent()
+        private void RaiseExitEvent()
         {
+            _state = CocoJumperState.Inactive;
             EventHelper.EventHelperInstance.RaiseEvent<ExitEvent>();
         }
 
@@ -163,7 +167,6 @@ namespace CocoJumper.Logic
                 {
                     _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
                 }
-                _state = CocoJumperState.Inactive;
                 RaiseExitEvent();
 
                 return CocoJumperKeyboardActionResult.Finished;
@@ -191,24 +194,18 @@ namespace CocoJumper.Logic
 
                 case KeyEventType.ConfirmSearching when _searchResults.Count == 0:
                     RaiseRenderSearcherEvent();
-
                     return CocoJumperKeyboardActionResult.Ok;
 
                 case KeyEventType.ConfirmSearching:
                     _state = CocoJumperState.Choosing;
-
                     RaiseSearchResultChangedEvent();
                     RaiseRenderSearcherEvent();
-
                     return CocoJumperKeyboardActionResult.Ok;
             }
-
             SearchCurrentView();
-
             if (_isSingleSearch
                 && !string.IsNullOrEmpty(_searchString) && _searchResults.Count != 0)
                 _state = CocoJumperState.Choosing;
-
             RaiseSearchResultChangedEvent();
             RaiseRenderSearcherEvent();
             return CocoJumperKeyboardActionResult.Ok;

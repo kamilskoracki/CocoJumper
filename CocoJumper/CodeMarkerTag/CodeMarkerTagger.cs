@@ -44,6 +44,8 @@ namespace CocoJumper.CodeMarkerTag
         {
             _taggers.Clear();
             _searcher = null;
+            if (_buffer == null || TagsChanged == null)
+                return;
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
 
