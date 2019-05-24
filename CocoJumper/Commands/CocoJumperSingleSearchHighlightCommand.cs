@@ -26,7 +26,6 @@ namespace CocoJumper.Commands
         private readonly IVsTextManager _vsTextManager;
         private InputListener _inputListener;
         private ICocoJumperLogic _logic;
-        private readonly AsyncPackage package;
 
         private CocoJumperSingleSearchHighlightCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
         {
@@ -46,11 +45,11 @@ namespace CocoJumper.Commands
             private set;
         }
 
-        private Microsoft.VisualStudio.Shell.IAsyncServiceProvider ServiceProvider
+        private IAsyncServiceProvider ServiceProvider
         {
             get
             {
-                return this.package;
+                return _package;
             }
         }
 
