@@ -97,6 +97,9 @@
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="publishManifest.json" />
+    <None Include="README.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
