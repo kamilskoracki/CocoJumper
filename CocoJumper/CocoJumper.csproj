@@ -96,7 +96,9 @@
     </None>
     <None Include="Key.snk" />
     <None Include="packages.config" />
-    <None Include="publishManifest.json" />
+    <None Include="publishManifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
