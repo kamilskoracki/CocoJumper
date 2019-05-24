@@ -7,6 +7,10 @@ CocoJumper is addon to Visual Studio based on [AceJump](https://github.com/aceju
 | Ctrl+Alt+; | Activates multi search mode with supports multiple characters |
 | Ctrl + Alt + / | Activates single search mode |
 | Ctrl + Alt + / + Shift | Activates single search mode with selects text from current caret position to selected character |
+
+# Configuration
+Configuration can be found in Tools > Options > Environment > Keyboard > CocoJumper.
+
 # Single search mode
 
 > After activating this mode you will see special control located on current position of caret with displays number of characters found in current view.
