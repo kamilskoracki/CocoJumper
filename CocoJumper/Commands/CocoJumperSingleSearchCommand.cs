@@ -1,5 +1,7 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Events;
 using CocoJumper.Base.Logic;
+using CocoJumper.Events;
 using CocoJumper.Extensions;
 using CocoJumper.Listeners;
 using CocoJumper.Logic;
@@ -28,12 +30,13 @@ namespace CocoJumper.Commands
         private InputListener _inputListener;
         private ICocoJumperLogic _logic;
 
-        private CocoJumperSingleSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
+        private CocoJumperSingleSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService, IEventAggregator eventAggregator)
         {
             this._package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             _vsTextManager = textManager ?? throw new ArgumentNullException(nameof(textManager));
             this._editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
+            eventAggregator.AddListener(new DelegateListener<ExitEvent>(OnExit), true);
 
             CommandID menuCommandId = new CommandID(CommandSet, CommandId);
             MenuCommand menuItem = new MenuCommand(Execute, menuCommandId);
@@ -61,9 +64,10 @@ namespace CocoJumper.Commands
             IComponentModel componentModel = await package.GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
             Assumes.Present(componentModel);
             IVsEditorAdaptersFactoryService editor = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+            IEventAggregator eventAggregator = componentModel.GetService<IEventAggregator>();
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
-            Instance = new CocoJumperSingleSearchCommand(package, commandService, vsTextManager, editor);
+            Instance = new CocoJumperSingleSearchCommand(package, commandService, vsTextManager, editor, eventAggregator);
         }
 
         private void CleanupLogicAndInputListener()
@@ -94,6 +98,10 @@ namespace CocoJumper.Commands
             _logic.ActivateSearching(true, false);
         }
 
+        private void OnExit(ExitEvent e)
+        {
+            CleanupLogicAndInputListener();
+        }
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)
         {
             _logic = _logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(_logic)} is null");
