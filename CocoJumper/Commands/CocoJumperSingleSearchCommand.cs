@@ -88,14 +88,7 @@ namespace CocoJumper.Commands
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
 
-            _logic = new CocoJumperLogic(renderer,
-                cocoJumperCommandPackage.LimitResults,
-                cocoJumperCommandPackage.TimerInterval,
-                cocoJumperCommandPackage.AutomaticallyExitInterval,
-                cocoJumperCommandPackage.JumpAfterChoosedElement,
-                cocoJumperCommandPackage.DisableHighlightForSingleSearch,
-                cocoJumperCommandPackage.DisableHighlightForMultiSearch,
-                cocoJumperCommandPackage.DisableHighlightForSingleHighlight);
+            _logic = new CocoJumperLogic(renderer, cocoJumperCommandPackage);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(true, false);
