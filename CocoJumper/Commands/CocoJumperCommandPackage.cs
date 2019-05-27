@@ -20,12 +20,11 @@ namespace CocoJumper.Commands
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            MefProvider.ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
             await CocoJumperMultiSearchCommand.InitializeAsync(this);
             await CocoJumperSingleSearchCommand.InitializeAsync(this);
+            await CocoJumperSingleSearchHighlightCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
-
-            MefProvider.ComponentModel = await GetServiceAsync(typeof(SComponentModel)) as IComponentModel;
-            await CocoJumper.Commands.CocoJumperSingleSearchHighlightCommand.InitializeAsync(this);
         }
 
         public int LimitResults

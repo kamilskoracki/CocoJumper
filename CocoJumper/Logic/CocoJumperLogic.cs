@@ -58,7 +58,6 @@ namespace CocoJumper.Logic
             _autoExitDispatcherTimer.Tick -= OnAutoExitTimerEvent;
             _timer.Stop();
             _autoExitDispatcherTimer.Stop();
-            RaiseExitEvent();
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
