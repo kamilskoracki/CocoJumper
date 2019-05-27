@@ -1,4 +1,5 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.EventModels;
 using CocoJumper.Base.Events;
 using CocoJumper.Base.Logic;
 using CocoJumper.Base.Model;
@@ -13,14 +14,14 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
-        private readonly bool _jumpAfterChoosedElement;
+        private readonly bool _jumpAfterChosenElement;
         private readonly int _searchLimit;
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
-        private bool _disableMultiSearchHighlight;
-        private bool _disableSingleSearchHighlight;
-        private bool _disableSingleSearchSelectHighlight;
+        private readonly bool _disableMultiSearchHighlight;
+        private readonly bool _disableSingleSearchHighlight;
+        private readonly bool _disableSingleSearchSelectHighlight;
         private bool _isHighlight;
         private bool _isSingleSearch;
         private string _searchString;
@@ -31,7 +32,7 @@ namespace CocoJumper.Logic
             int searchLimit,
             int timeInterval,
             int automaticallyExitInterval,
-            bool jumpAfterChoosedElement,
+            bool jumpAfterChosenElement,
             bool disableSingleSearchHighlight,
             bool disableMultiSearchHighlight,
             bool disableSingleSearchSelectHighlight
@@ -42,7 +43,7 @@ namespace CocoJumper.Logic
             _disableMultiSearchHighlight = disableMultiSearchHighlight;
             _disableSingleSearchHighlight = disableSingleSearchHighlight;
             _disableSingleSearchSelectHighlight = disableSingleSearchSelectHighlight;
-            _jumpAfterChoosedElement = jumpAfterChoosedElement;
+            _jumpAfterChosenElement = jumpAfterChosenElement;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(timeInterval) };
             _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(automaticallyExitInterval) };
             _autoExitDispatcherTimer.Tick += OnAutoExitTimerEvent;
@@ -73,6 +74,8 @@ namespace CocoJumper.Logic
             _autoExitDispatcherTimer.Tick -= OnAutoExitTimerEvent;
             _timer.Stop();
             _autoExitDispatcherTimer.Stop();
+
+            GC.SuppressFinalize(this);
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
@@ -103,10 +106,10 @@ namespace CocoJumper.Logic
             return text.Substring(0, text.Length - 1);
         }
 
-        private static void ThrowKeyPressWithNullKeyException(char? key = null)
+        private static void ThrowKeyPressWithNullKeyException()
         {
             throw new Exception(
-                $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
+                $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but key was null");
         }
 
         private bool IsHighlightDisabled()
@@ -183,7 +186,7 @@ namespace CocoJumper.Logic
                 }
                 else
                 {
-                    _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
+                    _viewProvider.MoveCaretTo(_jumpAfterChosenElement ? isFinished.Position + isFinished.Length : isFinished.Position);
                 }
                 _state = CocoJumperState.Inactive;
                 RaiseExitEvent();

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using CocoJumper.Base.EventModels;
 
 namespace CocoJumper.CodeHighlighterTag
 {
