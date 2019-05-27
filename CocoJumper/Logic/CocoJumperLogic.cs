@@ -13,13 +13,13 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
+        private readonly bool _jumpAfterChoosedElement;
         private readonly int _searchLimit;
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
-        private bool _isSingleSearch;
-        private readonly bool _jumpAfterChoosedElement;
         private bool _isHighlight;
+        private bool _isSingleSearch;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
@@ -48,6 +48,7 @@ namespace CocoJumper.Logic
             _choosingString = string.Empty;
             _isSingleSearch = isSingle;
             _isHighlight = isHighlight;
+            _viewProvider.ClearSelection();
             RaiseRenderSearcherEvent();
         }
 
@@ -58,7 +59,6 @@ namespace CocoJumper.Logic
             _autoExitDispatcherTimer.Tick -= OnAutoExitTimerEvent;
             _timer.Stop();
             _autoExitDispatcherTimer.Stop();
-            RaiseExitEvent();
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
