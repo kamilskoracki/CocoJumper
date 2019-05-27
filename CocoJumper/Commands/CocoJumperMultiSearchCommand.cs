@@ -83,7 +83,11 @@ namespace CocoJumper.Commands
                 cocoJumperCommandPackage.LimitResults,
                 cocoJumperCommandPackage.TimerInterval,
                 cocoJumperCommandPackage.AutomaticallyExitInterval,
-                cocoJumperCommandPackage.JumpAfterChoosedElement);
+                cocoJumperCommandPackage.JumpAfterChoosedElement,
+                cocoJumperCommandPackage.DisableHighlightForSingleSearch,
+                cocoJumperCommandPackage.DisableHighlightForMultiSearch, 
+                cocoJumperCommandPackage.DisableHighlightForSingleHighlight
+                );
 
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;

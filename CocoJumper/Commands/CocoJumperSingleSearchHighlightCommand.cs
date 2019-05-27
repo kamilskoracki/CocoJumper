@@ -48,13 +48,7 @@ namespace CocoJumper.Commands
             private set;
         }
 
-        private IAsyncServiceProvider ServiceProvider
-        {
-            get
-            {
-                return _package;
-            }
-        }
+        private IAsyncServiceProvider ServiceProvider => _package;
 
         public static async Task InitializeAsync(AsyncPackage package)
         {
@@ -91,7 +85,10 @@ namespace CocoJumper.Commands
                 cocoJumperCommandPackage.LimitResults,
                 cocoJumperCommandPackage.TimerInterval,
                 cocoJumperCommandPackage.AutomaticallyExitInterval,
-                cocoJumperCommandPackage.JumpAfterChoosedElement);
+                cocoJumperCommandPackage.JumpAfterChoosedElement,
+                cocoJumperCommandPackage.DisableHighlightForSingleSearch,
+                cocoJumperCommandPackage.DisableHighlightForMultiSearch,
+                cocoJumperCommandPackage.DisableHighlightForSingleHighlight);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(true, true);
