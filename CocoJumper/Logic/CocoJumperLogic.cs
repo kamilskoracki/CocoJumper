@@ -1,8 +1,11 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.EventModels;
 using CocoJumper.Base.Events;
+using CocoJumper.Base.Exception;
 using CocoJumper.Base.Logic;
 using CocoJumper.Base.Model;
 using CocoJumper.Base.Provider;
+using CocoJumper.Commands;
 using CocoJumper.Helpers;
 using System;
 using System.Collections.Generic;
@@ -13,7 +16,10 @@ namespace CocoJumper.Logic
 {
     public class CocoJumperLogic : ICocoJumperLogic
     {
-        private readonly bool _jumpAfterChoosedElement;
+        private readonly bool _disableMultiSearchHighlight;
+        private readonly bool _disableSingleSearchHighlight;
+        private readonly bool _disableSingleSearchSelectHighlight;
+        private readonly bool _jumpAfterChosenElement;
         private readonly int _searchLimit;
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
@@ -24,13 +30,16 @@ namespace CocoJumper.Logic
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
 
-        public CocoJumperLogic(IWpfViewProvider renderer, int searchLimit, int timeInterval, int automaticallyExitInterval, bool jumpAfterChoosedElement)
+        public CocoJumperLogic(IWpfViewProvider renderer, CocoJumperCommandPackage package)
         {
             _state = CocoJumperState.Inactive;
-            _searchLimit = searchLimit;
-            _jumpAfterChoosedElement = jumpAfterChoosedElement;
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(timeInterval) };
-            _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(automaticallyExitInterval) };
+            _searchLimit = package.LimitResults;
+            _disableMultiSearchHighlight = package.DisableHighlightForMultiSearch;
+            _disableSingleSearchHighlight = package.DisableHighlightForSingleSearch;
+            _disableSingleSearchSelectHighlight = package.DisableHighlightForSingleHighlight;
+            _jumpAfterChosenElement = package.JumpAfterChoosedElement;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(package.TimerInterval) };
+            _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(package.AutomaticallyExitInterval) };
             _autoExitDispatcherTimer.Tick += OnAutoExitTimerEvent;
             _timer.Tick += OnTimerTick;
             _searchResults = new List<SearchResult>();
@@ -40,7 +49,8 @@ namespace CocoJumper.Logic
         public void ActivateSearching(bool isSingle, bool isHighlight)
         {
             if (_state != CocoJumperState.Inactive)
-                throw new Exception($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
+                throw new InvalidStateException($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
+
             _autoExitDispatcherTimer.Stop();
             _autoExitDispatcherTimer.Start();
             _state = CocoJumperState.Searching;
@@ -59,6 +69,8 @@ namespace CocoJumper.Logic
             _autoExitDispatcherTimer.Tick -= OnAutoExitTimerEvent;
             _timer.Stop();
             _autoExitDispatcherTimer.Stop();
+
+            GC.SuppressFinalize(this);
         }
 
         public CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType)
@@ -89,10 +101,17 @@ namespace CocoJumper.Logic
             return text.Substring(0, text.Length - 1);
         }
 
-        private static void ThrowKeyPressWithNullKeyException(char? key = null)
+        private static void ThrowKeyPressWithNullKeyException()
         {
-            throw new Exception(
-                $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
+            throw new InvalidStateException(
+                $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but key was null");
+        }
+
+        private bool IsHighlightDisabled()
+        {
+            return _disableSingleSearchHighlight && _isSingleSearch && !_isHighlight
+                   || _disableMultiSearchHighlight && !_isSingleSearch && !_isHighlight
+                   || _disableSingleSearchSelectHighlight && !_isSingleSearch && _isHighlight;
         }
 
         private void OnAutoExitTimerEvent(object sender, EventArgs e)
@@ -106,6 +125,7 @@ namespace CocoJumper.Logic
             _timer.Stop();
             EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
             {
+                IsHighlightDisabled = IsHighlightDisabled(),
                 SearchEvents = _searchResults
                     .Select(p => new SearchEvent
                     {
@@ -161,7 +181,7 @@ namespace CocoJumper.Logic
                 }
                 else
                 {
-                    _viewProvider.MoveCaretTo(_jumpAfterChoosedElement ? isFinished.Position + isFinished.Length : isFinished.Position);
+                    _viewProvider.MoveCaretTo(_jumpAfterChosenElement ? isFinished.Position + isFinished.Length : isFinished.Position);
                 }
                 _state = CocoJumperState.Inactive;
                 RaiseExitEvent();
@@ -230,6 +250,7 @@ namespace CocoJumper.Logic
         {
             EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
             {
+                IsHighlightDisabled = IsHighlightDisabled(),
                 SearchEvents = _searchResults
                     .Where(x => x.Key.StartsWith(_choosingString))
                     .Select(p => new SearchEvent
@@ -246,7 +267,7 @@ namespace CocoJumper.Logic
         {
             int totalCount = 0;
             if (_state != CocoJumperState.Searching)
-                throw new Exception($"{nameof(SearchCurrentView)} - wrong state");
+                throw new InvalidStateException($"{nameof(SearchCurrentView)} - wrong state");
 
             _searchResults.Clear();
             if (string.IsNullOrEmpty(_searchString))

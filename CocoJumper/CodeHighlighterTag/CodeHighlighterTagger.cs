@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using CocoJumper.Base.EventModels;
 
 namespace CocoJumper.CodeHighlighterTag
 {
@@ -50,7 +51,7 @@ namespace CocoJumper.CodeHighlighterTag
         {
             if (!_textView.HasAggregateFocus || _textView.IsClosed)
                 return;
-            _searchEvents = e.SearchEvents;
+            _searchEvents = e.IsHighlightDisabled ? null : e.SearchEvents;
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
     }

@@ -1,5 +1,7 @@
 ﻿using CocoJumper.Base.Enum;
+using CocoJumper.Base.Events;
 using CocoJumper.Base.Logic;
+using CocoJumper.Events;
 using CocoJumper.Extensions;
 using CocoJumper.Listeners;
 using CocoJumper.Logic;
@@ -12,8 +14,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.ComponentModel.Design;
-using CocoJumper.Base.Events;
-using CocoJumper.Events;
 using Task = System.Threading.Tasks.Task;
 
 namespace CocoJumper.Commands
@@ -47,6 +47,7 @@ namespace CocoJumper.Commands
             get;
             private set;
         }
+
         private IAsyncServiceProvider ServiceProvider => _package;
 
         public static async Task InitializeAsync(AsyncPackage package)
@@ -79,11 +80,7 @@ namespace CocoJumper.Commands
 
             CleanupLogicAndInputListener();
             WpfViewProvider renderer = new WpfViewProvider(wpfTextView);
-            _logic = new CocoJumperLogic(renderer,
-                cocoJumperCommandPackage.LimitResults,
-                cocoJumperCommandPackage.TimerInterval,
-                cocoJumperCommandPackage.AutomaticallyExitInterval,
-                cocoJumperCommandPackage.JumpAfterChoosedElement);
+            _logic = new CocoJumperLogic(renderer, cocoJumperCommandPackage);
 
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
@@ -94,6 +91,7 @@ namespace CocoJumper.Commands
         {
             CleanupLogicAndInputListener();
         }
+
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)
         {
             _logic = _logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(_logic)} is null");

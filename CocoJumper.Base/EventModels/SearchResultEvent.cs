@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using CocoJumper.Base.Events;
+using System.Collections.Generic;
 
-namespace CocoJumper.Base.Events
+namespace CocoJumper.Base.EventModels
 {
     public class SearchResultEvent
     {
-        public List<SearchEvent> SearchEvents;
-
         public SearchResultEvent()
         {
             SearchEvents = new List<SearchEvent>();
         }
+
+        public bool IsHighlightDisabled { get; set; }
+        public List<SearchEvent> SearchEvents { get; set; }
     }
 }
