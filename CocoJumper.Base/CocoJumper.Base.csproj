@@ -80,6 +80,7 @@
     <Compile Include="EventModels\SearchEvent.cs" />
     <Compile Include="EventModels\SearchResultEvent.cs" />
     <Compile Include="EventModels\StartNewSearchEvent.cs" />
+    <Compile Include="Exception\InvalidStateException.cs" />
     <Compile Include="Logic\ICocoJumperLogic.cs" />
     <Compile Include="Logic\TaggerCommon.cs" />
     <Compile Include="Model\LineData.cs" />
