@@ -18,11 +18,11 @@ namespace CocoJumper.Logic
         private readonly List<SearchResult> _searchResults;
         private readonly DispatcherTimer _timer, _autoExitDispatcherTimer;
         private string _choosingString;
+        private bool _disableMultiSearchHighlight;
+        private bool _disableSingleSearchHighlight;
+        private bool _disableSingleSearchSelectHighlight;
         private bool _isHighlight;
         private bool _isSingleSearch;
-        private bool _disableSingleSearchHighlight;
-        private bool _disableMultiSearchHighlight;
-        private bool _disableSingleSearchSelectHighlight;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
@@ -109,6 +109,13 @@ namespace CocoJumper.Logic
                 $"{nameof(CocoJumperLogic)} is in wrong state, {nameof(KeyEventType.KeyPress)} was passed but {nameof(key)} was null");
         }
 
+        private bool IsHighlightDisabled()
+        {
+            return _disableSingleSearchHighlight && _isSingleSearch && !_isHighlight
+                   || _disableMultiSearchHighlight && !_isSingleSearch && !_isHighlight
+                   || _disableSingleSearchSelectHighlight && !_isSingleSearch && _isHighlight;
+        }
+
         private void OnAutoExitTimerEvent(object sender, EventArgs e)
         {
             _autoExitDispatcherTimer.Stop();
@@ -120,11 +127,7 @@ namespace CocoJumper.Logic
             _timer.Stop();
             EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
             {
-                IsHighlightDisabled =
-                    (_disableSingleSearchHighlight && _isSingleSearch && !_isHighlight)
-                    || (_disableMultiSearchHighlight && !_isSingleSearch && !_isHighlight)
-                    || (_disableSingleSearchSelectHighlight && !_isSingleSearch && _isHighlight)
-                ,
+                IsHighlightDisabled = IsHighlightDisabled(),
                 SearchEvents = _searchResults
                     .Select(p => new SearchEvent
                     {
@@ -249,11 +252,7 @@ namespace CocoJumper.Logic
         {
             EventHelper.EventHelperInstance.RaiseEvent(new SearchResultEvent
             {
-                IsHighlightDisabled =
-                    (_disableSingleSearchHighlight && _isSingleSearch && !_isHighlight)
-                    || (_disableMultiSearchHighlight && !_isSingleSearch && !_isHighlight)
-                    || (_disableSingleSearchSelectHighlight && !_isSingleSearch && _isHighlight)
-                ,
+                IsHighlightDisabled = IsHighlightDisabled(),
                 SearchEvents = _searchResults
                     .Where(x => x.Key.StartsWith(_choosingString))
                     .Select(p => new SearchEvent
