@@ -18,6 +18,19 @@ namespace CocoJumper.Provider
                               $"{nameof(WpfViewProvider)} in {nameof(WpfViewProvider)}, {nameof(wpfTextView)} was null");
         }
 
+        public void ClearSelection()
+        {
+            if (_wpfTextView.Selection.IsActive)
+            {
+                _wpfTextView.Selection.Clear();
+            }
+        }
+
+        public int GetCaretPosition()
+        {
+            return _wpfTextView.Caret.Position.BufferPosition.Position;
+        }
+
         public IEnumerable<LineData> GetCurrentRenderedText()
         {
             foreach (ITextViewLine item in _wpfTextView.TextViewLines)
@@ -30,16 +43,12 @@ namespace CocoJumper.Provider
                 };
             }
         }
-
         public void MoveCaretTo(int position)
         {
             if (position > _wpfTextView.TextSnapshot.Length)
                 position = _wpfTextView.TextSnapshot.Length;
             SnapshotPoint snapshotPoint = new SnapshotPoint(_wpfTextView.TextSnapshot, position);
-            if (_wpfTextView.Selection.IsActive)
-            {
-                _wpfTextView.Selection.Clear();
-            }
+            ClearSelection();
             _wpfTextView.Caret.MoveTo(snapshotPoint);
         }
 
@@ -56,17 +65,9 @@ namespace CocoJumper.Provider
             SnapshotPoint snapshotPointFrom = new SnapshotPoint(_wpfTextView.TextSnapshot, from);
             SnapshotPoint snapshotPointTo = new SnapshotPoint(_wpfTextView.TextSnapshot, to);
             SnapshotSpan destinationSnapshotSpan = from > to ? new SnapshotSpan(snapshotPointTo, snapshotPointFrom) : new SnapshotSpan(snapshotPointFrom, snapshotPointTo);
-            
-            if (_wpfTextView.Selection.IsActive)
-            {
-                _wpfTextView.Selection.Clear();
-            }
-            _wpfTextView.Selection.Select(destinationSnapshotSpan, from > to);
-        }
 
-        public int GetCaretPosition()
-        {
-            return _wpfTextView.Caret.Position.BufferPosition.Position;
+            ClearSelection();
+            _wpfTextView.Selection.Select(destinationSnapshotSpan, from > to);
         }
     }
 }
