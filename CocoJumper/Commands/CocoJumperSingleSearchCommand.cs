@@ -92,7 +92,10 @@ namespace CocoJumper.Commands
                 cocoJumperCommandPackage.LimitResults,
                 cocoJumperCommandPackage.TimerInterval,
                 cocoJumperCommandPackage.AutomaticallyExitInterval,
-                cocoJumperCommandPackage.JumpAfterChoosedElement);
+                cocoJumperCommandPackage.JumpAfterChoosedElement,
+                cocoJumperCommandPackage.DisableHighlightForSingleSearch,
+                cocoJumperCommandPackage.DisableHighlightForMultiSearch,
+                cocoJumperCommandPackage.DisableHighlightForSingleHighlight);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
             _logic.ActivateSearching(true, false);
@@ -102,6 +105,7 @@ namespace CocoJumper.Commands
         {
             CleanupLogicAndInputListener();
         }
+
         private void OnKeyboardAction(object oSender, char? key, KeyEventType eventType)
         {
             _logic = _logic ?? throw new Exception($"{nameof(OnKeyboardAction)} in {nameof(CocoJumperMultiSearchCommand)}, {nameof(_logic)} is null");

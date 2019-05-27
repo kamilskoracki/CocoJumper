@@ -62,5 +62,32 @@ namespace CocoJumper.Commands
                 return page.AutomaticallyExitInterval;
             }
         }
+
+        public bool DisableHighlightForMultiSearch
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.DisableHighlightForMultiSearch;
+            }
+        }
+
+        public bool DisableHighlightForSingleHighlight
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.DisableHighlightForSingleHighlight;
+            }
+        }
+
+        public bool DisableHighlightForSingleSearch
+        {
+            get
+            {
+                CocoJumperOptions page = (CocoJumperOptions)GetDialogPage(typeof(CocoJumperOptions));
+                return page.DisableHighlightForSingleSearch;
+            }
+        }
     }
 }

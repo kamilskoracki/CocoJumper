@@ -50,7 +50,7 @@ namespace CocoJumper.CodeHighlighterTag
         {
             if (!_textView.HasAggregateFocus || _textView.IsClosed)
                 return;
-            _searchEvents = e.SearchEvents;
+            _searchEvents = e.IsHighlightDisabled ? null : e.SearchEvents;
             this.InvokeTagsChanged(TagsChanged, _buffer);
         }
     }
