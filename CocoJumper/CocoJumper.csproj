@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Commands\CocoJumperSingleSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperSingleSearchHighlightCommand.cs" />
+    <Compile Include="Commands\CocoJumperWordSearchCommand.cs" />
     <Compile Include="Controls\SearcherWithMarker.xaml.cs">
       <DependentUpon>SearcherWithMarker.xaml</DependentUpon>
     </Compile>
@@ -109,6 +110,7 @@
   <ItemGroup>
     <Content Include="Commands\Resources\CocoJumperSingleSearchCommand.png" />
     <Content Include="Commands\Resources\CocoJumperSingleSearchHighlightCommand.png" />
+    <Content Include="Commands\Resources\CocoJumperWordSearchCommand.png" />
     <VSCTCompile Include="Commands\CocoJumperCommandPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>

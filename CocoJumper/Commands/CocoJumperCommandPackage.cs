@@ -25,6 +25,7 @@ namespace CocoJumper.Commands
             await CocoJumperSingleSearchCommand.InitializeAsync(this);
             await CocoJumperSingleSearchHighlightCommand.InitializeAsync(this);
             await base.InitializeAsync(cancellationToken, progress);
+            await CocoJumper.Commands.CocoJumperWordSearchCommand.InitializeAsync(this);
         }
 
         public int LimitResults

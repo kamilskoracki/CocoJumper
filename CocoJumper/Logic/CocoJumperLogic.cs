@@ -10,6 +10,7 @@ using CocoJumper.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 
 namespace CocoJumper.Logic
@@ -26,9 +27,11 @@ namespace CocoJumper.Logic
         private string _choosingString;
         private bool _isHighlight;
         private bool _isSingleSearch;
+        private bool _isWordSearch;
         private string _searchString;
         private CocoJumperState _state;
         private IWpfViewProvider _viewProvider;
+        private readonly Regex _wordsRegex = new Regex(@"(\b[^\s.,;:=<>(){}]+\b)", RegexOptions.Compiled);
 
         public CocoJumperLogic(IWpfViewProvider renderer, CocoJumperCommandPackage package)
         {
@@ -46,7 +49,7 @@ namespace CocoJumper.Logic
             _viewProvider = renderer;
         }
 
-        public void ActivateSearching(bool isSingle, bool isHighlight)
+        public void ActivateSearching(bool isSingle, bool isHighlight, bool isWord)
         {
             if (_state != CocoJumperState.Inactive)
                 throw new InvalidStateException($"{nameof(ActivateSearching)} in {nameof(CocoJumperLogic)}, state is in wrong state {_state}");
@@ -58,6 +61,7 @@ namespace CocoJumper.Logic
             _choosingString = string.Empty;
             _isSingleSearch = isSingle;
             _isHighlight = isHighlight;
+            _isWordSearch = isWord;
             _viewProvider.ClearSelection();
             RaiseRenderSearcherEvent();
         }
@@ -195,37 +199,41 @@ namespace CocoJumper.Logic
 
         private CocoJumperKeyboardActionResult PerformSearching(char? key, KeyEventType eventType)
         {
-            switch (eventType)
+            if (!_isWordSearch)
             {
-                case KeyEventType.Backspace when !string.IsNullOrEmpty(_searchString):
-                    _searchString = RemoveLastChar(_searchString);
-                    break;
+                switch (eventType)
+                {
+                    case KeyEventType.Backspace when !string.IsNullOrEmpty(_searchString):
+                        _searchString = RemoveLastChar(_searchString);
+                        break;
 
-                case KeyEventType.KeyPress when key.HasValue:
-                    _searchString += GeyKeyValue(key);
-                    break;
+                    case KeyEventType.KeyPress when key.HasValue:
+                        _searchString += GeyKeyValue(key);
+                        break;
 
-                case KeyEventType.KeyPress:
-                    ThrowKeyPressWithNullKeyException();
-                    break;
+                    case KeyEventType.KeyPress:
+                        ThrowKeyPressWithNullKeyException();
+                        break;
 
-                case KeyEventType.ConfirmSearching when _searchResults.Count == 0:
-                    RaiseRenderSearcherEvent();
+                    case KeyEventType.ConfirmSearching when _searchResults.Count == 0:
+                        RaiseRenderSearcherEvent();
 
-                    return CocoJumperKeyboardActionResult.Ok;
+                        return CocoJumperKeyboardActionResult.Ok;
 
-                case KeyEventType.ConfirmSearching:
-                    _state = CocoJumperState.Choosing;
+                    case KeyEventType.ConfirmSearching:
+                        _state = CocoJumperState.Choosing;
 
-                    RaiseSearchResultChangedEvent();
-                    RaiseRenderSearcherEvent();
+                        RaiseSearchResultChangedEvent();
+                        RaiseRenderSearcherEvent();
 
-                    return CocoJumperKeyboardActionResult.Ok;
+                        return CocoJumperKeyboardActionResult.Ok;
+                }
             }
 
             SearchCurrentView();
 
-            if (_isSingleSearch
+            if (_isWordSearch
+                || _isSingleSearch
                 && !string.IsNullOrEmpty(_searchString) && _searchResults.Count != 0)
                 _state = CocoJumperState.Choosing;
 
@@ -270,18 +278,25 @@ namespace CocoJumper.Logic
                 throw new InvalidStateException($"{nameof(SearchCurrentView)} - wrong state");
 
             _searchResults.Clear();
-            if (string.IsNullOrEmpty(_searchString))
+            if (!_isWordSearch 
+                && string.IsNullOrEmpty(_searchString))
                 return;
 
             using (IEnumerator<string> keyboardKeys =
                 KeyboardLayoutHelper
-                    .GetKeysNotNull(_searchString[_searchString.Length - 1])
+                    .GetKeysNotNull(_isWordSearch ? 'l' : _searchString[_searchString.Length - 1])
                     .GetEnumerator())
             {
+                int wordSearchLength = 0;
                 foreach (LineData item in _viewProvider.GetCurrentRenderedText())
                 {
-                    int n = 0;
+                    if (_isWordSearch)
+                    {
+                        wordSearchLength = PerformWordSearching(item, keyboardKeys, wordSearchLength);
+                        continue;
+                    }
 
+                    int n = 0;
                     while ((n = item.Data.IndexOf(_searchString, n, StringComparison.InvariantCulture)) != -1)
                     {
                         keyboardKeys.MoveNext();
@@ -300,6 +315,33 @@ namespace CocoJumper.Logic
                     }
                 }
             }
+        }
+
+        private int PerformWordSearching(LineData item, IEnumerator<string> keyboardKeys, int wordSearchLength)
+        {
+            MatchCollection words = _wordsRegex.Matches(item.Data);
+            int previousLength = wordSearchLength;
+
+            foreach (Match word in words)
+            {
+                int wordPosition = wordSearchLength + word.Index;
+                int currentPosition = _viewProvider.GetCaretPosition();
+                if (string.IsNullOrWhiteSpace(word.Value)
+                    || currentPosition >= wordPosition
+                    && currentPosition <= wordPosition + word.Length)
+                    continue;
+
+                keyboardKeys.MoveNext();
+
+                _searchResults.Add(new SearchResult
+                {
+                    Length = 1,
+                    Position = wordPosition,
+                    Key = keyboardKeys.Current
+                });
+            }
+
+            return previousLength + item.DataLength + 2;
         }
     }
 }

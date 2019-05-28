@@ -84,7 +84,7 @@ namespace CocoJumper.Commands
             _logic = new CocoJumperLogic(renderer, cocoJumperCommandPackage);
             _inputListener = new InputListener(textView);
             _inputListener.KeyPressEvent += OnKeyboardAction;
-            _logic.ActivateSearching(true, true);
+            _logic.ActivateSearching(true, true, false);
         }
 
         private void OnExit(ExitEvent e)
