@@ -73,6 +73,13 @@
           <ButtonText>CocoJumper - SingleSearchHighlight</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidCocoJumperCommandPackageCmdSet" id="cmdidCocoJumperWordSearchCommand" priority="0x0100" type="Button">
+        <Parent guid="guidCocoJumperCommandPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages3" id="bmpPic1" />
+        <Strings>
+          <ButtonText>CocoJumper - WordSearch</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -85,12 +92,14 @@
       <Bitmap guid="guidImages" href="Resources\CocoJumperCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
       <Bitmap guid="guidImages1" href="Resources\CocoJumperSingleSearchCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
       <Bitmap guid="guidImages2" href="Resources\CocoJumperSingleSearchHighlightCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages3" href="Resources\CocoJumperWordSearchCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
     </Bitmaps>
   </Commands>
   <KeyBindings>
     <KeyBinding guid="guidCocoJumperCommandPackageCmdSet" id="CocoJumperCommandId" editor="guidVSStd97" mod1="CONTROL ALT" key1="VK_OEM_1" />
     <KeyBinding guid="guidCocoJumperCommandPackageCmdSet" id="cmdidCocoJumperSingleSearchCommand" editor="guidVSStd97" mod1="CONTROL ALT" key1="VK_OEM_2" />
     <KeyBinding guid="guidCocoJumperCommandPackageCmdSet" id="cmdidCocoJumperSingleSearchHighlightCommand" editor="guidVSStd97" mod1="CONTROL ALT SHIFT" key1="VK_OEM_2" />
+    <KeyBinding guid="guidCocoJumperCommandPackageCmdSet" id="cmdidCocoJumperWordSearchCommand" editor="guidVSStd97" mod1="CONTROL ALT"  key1="VK_OEM_7" />
   </KeyBindings>
   <Symbols>
     <!-- This is the package guid. -->
@@ -102,6 +111,7 @@
       <IDSymbol name="CocoJumperCommandId" value="0x0100" />
       <IDSymbol value="4129" name="cmdidCocoJumperSingleSearchCommand" />
       <IDSymbol value="4130" name="cmdidCocoJumperSingleSearchHighlightCommand" />
+      <IDSymbol value="4131" name="cmdidCocoJumperWordSearchCommand" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{4c6fb194-1dd5-4e06-8779-d1f9ffde0979}">
@@ -123,6 +133,15 @@
     </GuidSymbol>
   
     <GuidSymbol value="{48be2278-bfbc-40d4-bd5b-b8aabb53e325}" name="guidImages2">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{a5e54357-e9de-40a1-95a1-5525f781bf5d}" name="guidImages3">
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

@@ -5,7 +5,7 @@ namespace CocoJumper.Base.Logic
 {
     public interface ICocoJumperLogic : IDisposable
     {
-        void ActivateSearching(bool isSingle, bool isHighlight);
+        void ActivateSearching(bool isSingle, bool isHighlight, bool isWord);
         CocoJumperKeyboardActionResult KeyboardAction(char? key, KeyEventType eventType);
     }
 }
