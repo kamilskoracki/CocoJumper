@@ -38,6 +38,8 @@ Configuration can be found in Tools > Options > Environment > Keyboard > CocoJum
 ![Example](https://i.imgur.com/9BOHDne.gif)
 
 # Word search mode
-> After activating this mode you will see for a moment a special control located on the current position of caret with a number of words found in the current view.
+> After activating this mode you will see special control located on the current position of caret with a number of words found in the current view.
 1. Activate this mode by using a shortcut or by clicking on Tools > CocoJumper - WordSearch.
 2. Press letter that you want to go to.
+
+![Example](https://i.imgur.com/7Ejb1LO.gif)
