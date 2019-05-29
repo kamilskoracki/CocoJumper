@@ -29,12 +29,14 @@ namespace CocoJumper.Commands
         private InputListener _inputListener;
         private ICocoJumperLogic _logic;
 
-        private CocoJumperMultiSearchCommand(AsyncPackage package, OleMenuCommandService commandService, IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService, IEventAggregator eventAggregator)
+        private CocoJumperMultiSearchCommand(AsyncPackage package, OleMenuCommandService commandService,
+            IVsTextManager textManager, IVsEditorAdaptersFactoryService editorAdaptersFactoryService,
+            IEventAggregator eventAggregator)
         {
-            this._package = package ?? throw new ArgumentNullException(nameof(package));
+            _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             _vsTextManager = textManager ?? throw new ArgumentNullException(nameof(textManager));
-            this._editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
+            _editorAdaptersFactoryService = editorAdaptersFactoryService ?? throw new ArgumentNullException(nameof(editorAdaptersFactoryService));
             eventAggregator.AddListener(new DelegateListener<ExitEvent>(OnExit), true);
 
             CommandID menuCommandId = new CommandID(CommandSet, CommandId);
@@ -48,7 +50,10 @@ namespace CocoJumper.Commands
             private set;
         }
 
-        private IAsyncServiceProvider ServiceProvider => _package;
+        private IAsyncServiceProvider ServiceProvider
+        {
+            get { return _package; }
+        }
 
         public static async Task InitializeAsync(AsyncPackage package)
         {

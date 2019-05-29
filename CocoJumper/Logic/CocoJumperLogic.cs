@@ -40,7 +40,7 @@ namespace CocoJumper.Logic
             _disableMultiSearchHighlight = package.DisableHighlightForMultiSearch;
             _disableSingleSearchHighlight = package.DisableHighlightForSingleSearch;
             _disableSingleSearchSelectHighlight = package.DisableHighlightForSingleHighlight;
-            _jumpAfterChosenElement = package.JumpAfterChoosedElement;
+            _jumpAfterChosenElement = package.JumpAfterChosenElement;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(package.TimerInterval) };
             _autoExitDispatcherTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(package.AutomaticallyExitInterval) };
             _autoExitDispatcherTimer.Tick += OnAutoExitTimerEvent;
