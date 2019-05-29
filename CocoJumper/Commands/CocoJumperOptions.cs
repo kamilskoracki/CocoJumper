@@ -38,7 +38,7 @@ namespace CocoJumper.Commands
         [DisplayName("Jump after choosed element")]
         [Description("If set to True, logic will move caret to the end of choosed element.")]
         [DefaultValue(false)]
-        public bool JumpAfterChoosedElement { get; set; } = false;
+        public bool JumpAfterChosenElement { get; set; } = false;
 
         [Category(GeneralCategory)]
         [DisplayName("Limit results")]

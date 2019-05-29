@@ -73,16 +73,23 @@ namespace CocoJumper.CodeMarkerTag
 
             foreach (SearchEvent eSearchEvent in e.SearchEvents)
             {
-                if (_taggers.ContainsKey(eSearchEvent.StartPosition))
+                TagSpan<IntraTextAdornmentTag> tagger = new TagSpan<IntraTextAdornmentTag>(
+                    span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(eSearchEvent.StartPosition, 0)),
+                    tag: new IntraTextAdornmentTag(new LetterWithMarker(eSearchEvent.Letters, lineHeight), null,
+                        PositionAffinity.Predecessor));
+                bool taggerExist = _taggers.ContainsKey(eSearchEvent.StartPosition);
+
+                if (eSearchEvent.StartPosition == 0
+                    && taggerExist)
+                {
+                    _taggers[eSearchEvent.StartPosition] = tagger;
+                    continue;
+                }
+
+                if (taggerExist)
                     continue;
 
-                _taggers.Add(eSearchEvent.StartPosition,
-                    new TagSpan<IntraTextAdornmentTag>(
-                        span: new SnapshotSpan(_buffer.CurrentSnapshot, new Span(eSearchEvent.StartPosition, 0)),
-                        tag: new IntraTextAdornmentTag(new LetterWithMarker(eSearchEvent.Letters, lineHeight), null,
-                            PositionAffinity.Predecessor)
-                    )
-                );
+                _taggers.Add(eSearchEvent.StartPosition, tagger);
             }
 
             IEnumerable<int> keysToRemove =
