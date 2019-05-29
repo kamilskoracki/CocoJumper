@@ -64,6 +64,7 @@
     <Compile Include="CodeHighlighterTag\CodeHighlighterTaggerProvider.cs" />
     <Compile Include="CodeMarkerTag\CodeMarkerTagger.cs" />
     <Compile Include="CodeMarkerTag\CodeMarkerTaggerProvider.cs" />
+    <Compile Include="Commands\CocoJumperBaseCommand.cs" />
     <Compile Include="Commands\CocoJumperMultiSearchCommand.cs" />
     <Compile Include="Commands\CocoJumperCommandPackage.cs" />
     <Compile Include="Commands\CocoJumperOptions.cs">
