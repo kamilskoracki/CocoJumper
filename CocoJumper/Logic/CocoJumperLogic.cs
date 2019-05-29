@@ -287,12 +287,11 @@ namespace CocoJumper.Logic
                     .GetKeysNotNull(_isWordSearch ? 'l' : _searchString[_searchString.Length - 1])
                     .GetEnumerator())
             {
-                int wordSearchLength = 0;
                 foreach (LineData item in _viewProvider.GetCurrentRenderedText())
                 {
                     if (_isWordSearch)
                     {
-                        wordSearchLength = PerformWordSearching(item, keyboardKeys, wordSearchLength);
+                        PerformWordSearching(item, keyboardKeys);
                         continue;
                     }
 
@@ -317,14 +316,13 @@ namespace CocoJumper.Logic
             }
         }
 
-        private int PerformWordSearching(LineData item, IEnumerator<string> keyboardKeys, int wordSearchLength)
+        private void PerformWordSearching(LineData item, IEnumerator<string> keyboardKeys)
         {
             MatchCollection words = _wordsRegex.Matches(item.Data);
-            int previousLength = wordSearchLength;
 
             foreach (Match word in words)
             {
-                int wordPosition = wordSearchLength + word.Index;
+                int wordPosition = item.Start + word.Index;
                 int currentPosition = _viewProvider.GetCaretPosition();
                 if (string.IsNullOrWhiteSpace(word.Value)
                     || currentPosition >= wordPosition
@@ -340,8 +338,6 @@ namespace CocoJumper.Logic
                     Key = keyboardKeys.Current
                 });
             }
-
-            return previousLength + item.DataLength + 2;
         }
     }
 }
